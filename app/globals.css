@@ -1,0 +1,18 @@
+/* 모든 화면에 공통으로 적용되는 기본 스타일 */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #ffffff;
+  color: #1a2b32;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    "Malgun Gothic", "맑은 고딕", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input {
+  font-family: inherit;
+}

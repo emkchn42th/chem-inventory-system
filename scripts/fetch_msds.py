@@ -24,18 +24,22 @@ from pathlib import Path
 # 이 API의 공통 주소. 뒤에 /getChemList 같은 오퍼레이션 이름을 붙여서 호출한다.
 BASE_URL = "https://apis.data.go.kr/B552468/msdschem"
 
-# 가져올 시약 목록: (표시할 이름, 카테고리, CAS 번호, 이름 검색어 후보)
+# 가져올 시약 목록: (표시할 이름, 카테고리 목록, CAS 번호, 이름 검색어 후보)
+#
+# 카테고리는 태그처럼 여러 개를 달 수 있다. 시약 하나가 두 성질을 동시에
+# 가질 수 있기 때문이다. 예를 들어 아세트산(빙초산)은 유기물이면서 산이므로
+# ["유기", "산"] 처럼 두 개를 넣으면 된다.
 #
 # CAS 번호는 물질마다 하나씩 붙는 세계 공통 등록번호라서 이름보다 정확하다.
 # 이름으로만 찾으면 "마그네슘" -> "산화마그네슘", "염산" -> "염산 오라민"처럼
 # 전혀 다른 물질이 검색될 수 있으므로, CAS 번호를 먼저 시도하고
 # 결과가 없을 때만 이름으로 다시 찾는다.
 REAGENTS = [
-    ("에탄올",       "유기", "64-17-5",   ["에탄올", "에틸알코올"]),
-    ("아세톤",       "유기", "67-64-1",   ["아세톤"]),
-    ("수산화나트륨", "무기", "1310-73-2", ["수산화나트륨"]),
-    ("마그네슘",     "금속", "7439-95-4", ["마그네슘"]),
-    ("염산",         "산",   "7647-01-0", ["염화수소", "염산"]),
+    ("에탄올",       ["유기"], "64-17-5",   ["에탄올", "에틸알코올"]),
+    ("아세톤",       ["유기"], "67-64-1",   ["아세톤"]),
+    ("수산화나트륨", ["염기"], "1310-73-2", ["수산화나트륨"]),
+    ("마그네슘",     ["금속"], "7439-95-4", ["마그네슘"]),
+    ("염산",         ["산"],   "7647-01-0", ["염화수소", "염산"]),
 ]
 
 # MSDS 16개 항목 중 우리 서비스에 필요한 것만 고른다.
@@ -160,7 +164,7 @@ def main():
     DATA_DIR.mkdir(exist_ok=True)
 
     rows = []
-    for display_name, category, cas_no, candidates in REAGENTS:
+    for display_name, categories, cas_no, candidates in REAGENTS:
         print(f"[검색] {display_name}")
 
         try:
@@ -177,7 +181,7 @@ def main():
 
         row = {
             "시약명": display_name,
-            "카테고리": category,
+            "카테고리": categories,
             "정식명칭": chem["chemNameKor"],
             "CAS번호": chem["casNo"],
             "chemId": chem["chemId"],
@@ -200,11 +204,19 @@ def main():
     json_path = DATA_DIR / "reagents.json"
     json_path.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    # CSV는 한 칸에 값을 하나만 넣는 형식이라, 카테고리가 여러 개일 때는
+    # 세미콜론(;)으로 이어 붙인다. 예) ["유기", "산"] -> "유기;산"
+    csv_rows = []
+    for row in rows:
+        csv_row = dict(row)
+        csv_row["카테고리"] = ";".join(row["카테고리"])
+        csv_rows.append(csv_row)
+
     csv_path = DATA_DIR / "reagents.csv"
     with csv_path.open("w", encoding="utf-8-sig", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+        writer = csv.DictWriter(f, fieldnames=list(csv_rows[0].keys()))
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows(csv_rows)
 
     print(f"\n완료: 시약 {len(rows)}종 저장")
     print(f"  {json_path}")

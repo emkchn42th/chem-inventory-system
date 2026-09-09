@@ -1,0 +1,299 @@
+/* 메인 화면 전용 스타일
+   색 기준: 청록(#00b2a9) + 흰 바탕
+   경고색: 빨강(#e5484d) — 유효기한 만료 표시용 */
+
+.page {
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+/* ===== 헤더 (화면 전체 폭을 청록으로 채운다) ===== */
+.header {
+  background: linear-gradient(135deg, #00b2a9 0%, #00857f 100%);
+  padding: 20px 0 28px;
+}
+
+.headerInner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.headerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #ffffff;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.logoMark {
+  font-size: 1.5rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+}
+
+.headerButton {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.headerButton:hover {
+  background: rgba(255, 255, 255, 0.32);
+}
+
+/* 검색란 */
+.searchBar {
+  display: flex;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  padding: 16px 18px;
+  font-size: 1rem;
+  color: #1a2b32;
+}
+
+.searchInput::placeholder {
+  color: #9aa8b0;
+}
+
+.searchButton {
+  border: none;
+  background: #00b2a9;
+  color: #ffffff;
+  padding: 0 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.searchButton:hover {
+  background: #00857f;
+}
+
+/* ===== 본문 공통 ===== */
+.container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 28px 20px 64px;
+}
+
+.section {
+  margin-bottom: 36px;
+}
+
+.sectionTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 14px;
+}
+
+/* ===== 현황 요약 타일 ===== */
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.summaryCard {
+  border: 1px solid #e6ecef;
+  border-radius: 14px;
+  padding: 18px 20px;
+  background: #ffffff;
+}
+
+.summaryLabel {
+  margin: 0 0 6px;
+  font-size: 0.87rem;
+  color: #6b7b84;
+}
+
+.summaryValue {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.summaryUnit {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #6b7b84;
+  margin-left: 3px;
+}
+
+/* 만료 재고가 있을 때만 붙는 강조 스타일 */
+.alertCard {
+  border-color: #f6c9ca;
+  background: #fef7f7;
+}
+
+.alertValue {
+  color: #e5484d;
+}
+
+/* ===== 카테고리 카드 ===== */
+.categoryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.categoryCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 26px 16px;
+  background: #ffffff;
+  border: 1px solid #e6ecef;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+
+.categoryCard:hover {
+  transform: translateY(-2px);
+  border-color: #00b2a9;
+  box-shadow: 0 8px 20px rgba(0, 178, 169, 0.15);
+}
+
+.categoryIcon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+}
+
+.categoryName {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.categoryCount {
+  font-size: 0.86rem;
+  color: #6b7b84;
+}
+
+/* 카테고리별 아이콘 배경색 (산=붉은색, 염기=푸른색으로 리트머스와 맞춤) */
+.acid {
+  background: #fdecf3;
+}
+
+.organic {
+  background: #f0eefe;
+}
+
+.base {
+  background: #e6f1fe;
+}
+
+.metal {
+  background: #fef5e7;
+}
+
+/* ===== 유효기한 만료 목록 ===== */
+.alertList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alertRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid #f6c9ca;
+  background: #fef7f7;
+  border-radius: 12px;
+  flex-wrap: wrap;
+}
+
+.alertBadge {
+  background: #e5484d;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.alertName {
+  font-weight: 700;
+}
+
+.alertPlace {
+  font-size: 0.87rem;
+  color: #6b7b84;
+  background: #ffffff;
+  border: 1px solid #e6ecef;
+  border-radius: 6px;
+  padding: 3px 9px;
+}
+
+.alertMeta {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: #6b7b84;
+}
+
+.emptyText {
+  margin: 0;
+  padding: 26px;
+  text-align: center;
+  color: #6b7b84;
+  background: #f8fafb;
+  border: 1px solid #e6ecef;
+  border-radius: 12px;
+}
+
+/* ===== 좁은 화면(휴대폰) 대응 ===== */
+@media (max-width: 600px) {
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .searchButton {
+    padding: 0 18px;
+  }
+
+  .alertMeta {
+    margin-left: 0;
+    width: 100%;
+  }
+}
