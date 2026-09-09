@@ -24,14 +24,18 @@ from pathlib import Path
 # 이 API의 공통 주소. 뒤에 /getChemList 같은 오퍼레이션 이름을 붙여서 호출한다.
 BASE_URL = "https://apis.data.go.kr/B552468/msdschem"
 
-# 가져올 시약 목록: (우리 서비스에 표시할 이름, 카테고리, API 검색어 후보)
-# 검색어 후보를 여러 개 둔 이유는 DB에 등록된 정식 명칭이 다를 수 있기 때문이다.
+# 가져올 시약 목록: (표시할 이름, 카테고리, CAS 번호, 이름 검색어 후보)
+#
+# CAS 번호는 물질마다 하나씩 붙는 세계 공통 등록번호라서 이름보다 정확하다.
+# 이름으로만 찾으면 "마그네슘" -> "산화마그네슘", "염산" -> "염산 오라민"처럼
+# 전혀 다른 물질이 검색될 수 있으므로, CAS 번호를 먼저 시도하고
+# 결과가 없을 때만 이름으로 다시 찾는다.
 REAGENTS = [
-    ("에탄올",       "유기", ["에탄올", "에틸알코올"]),
-    ("아세톤",       "유기", ["아세톤"]),
-    ("수산화나트륨", "무기", ["수산화나트륨"]),
-    ("마그네슘",     "금속", ["마그네슘"]),
-    ("염산",         "산",   ["염산", "염화수소"]),
+    ("에탄올",       "유기", "64-17-5",   ["에탄올", "에틸알코올"]),
+    ("아세톤",       "유기", "67-64-1",   ["아세톤"]),
+    ("수산화나트륨", "무기", "1310-73-2", ["수산화나트륨"]),
+    ("마그네슘",     "금속", "7439-95-4", ["마그네슘"]),
+    ("염산",         "산",   "7647-01-0", ["염화수소", "염산"]),
 ]
 
 # MSDS 16개 항목 중 우리 서비스에 필요한 것만 고른다.
@@ -95,27 +99,44 @@ def call_api(operation, params, service_key):
     return root.findall(".//item")
 
 
-def find_chem(candidates, service_key):
-    """시약 이름으로 화학물질을 검색해 첫 번째 결과를 돌려준다."""
+def search(keyword, cond, service_key):
+    """getChemList 를 호출해 첫 번째 검색 결과를 돌려준다. 없으면 None."""
+    items = call_api(
+        "getChemList",
+        {
+            "searchWrd": keyword,
+            "searchCnd": cond,   # 0=국문명, 1=CAS No, 2=UN No, 3=KE No, 4=EN No
+            "numOfRows": 5,
+            "pageNo": 1,
+        },
+        service_key,
+    )
+    if not items:
+        return None
+
+    first = items[0]
+    return {
+        "chemId": (first.findtext("chemId") or "").strip(),
+        "casNo": (first.findtext("casNo") or "").strip(),
+        "chemNameKor": (first.findtext("chemNameKor") or "").strip(),
+    }
+
+
+def find_chem(cas_no, candidates, service_key):
+    """CAS 번호로 먼저 찾고, 실패하면 이름으로 찾는다."""
+    if cas_no:
+        found = search(cas_no, 1, service_key)
+        if found:
+            return found
+        print(f"    - CAS {cas_no} 검색 결과 없음 -> 이름으로 재시도")
+
     for word in candidates:
-        items = call_api(
-            "getChemList",
-            {
-                "searchWrd": word,
-                "searchCnd": 0,   # 0=국문명, 1=CAS No, 2=UN No, 3=KE No, 4=EN No
-                "numOfRows": 5,
-                "pageNo": 1,
-            },
-            service_key,
-        )
-        if items:
-            first = items[0]
-            return {
-                "chemId": (first.findtext("chemId") or "").strip(),
-                "casNo": (first.findtext("casNo") or "").strip(),
-                "chemNameKor": (first.findtext("chemNameKor") or "").strip(),
-            }
+        found = search(word, 0, service_key)
+        if found:
+            print(f"    - 이름 '{word}' 으로 찾음 (CAS 검색 실패분이니 결과를 꼭 확인할 것)")
+            return found
         print(f"    - '{word}' 검색 결과 없음 -> 다음 후보로 재시도")
+
     return None
 
 
@@ -139,11 +160,11 @@ def main():
     DATA_DIR.mkdir(exist_ok=True)
 
     rows = []
-    for display_name, category, candidates in REAGENTS:
+    for display_name, category, cas_no, candidates in REAGENTS:
         print(f"[검색] {display_name}")
 
         try:
-            chem = find_chem(candidates, service_key)
+            chem = find_chem(cas_no, candidates, service_key)
         except Exception as error:
             print(f"    !! 검색 실패: {error}")
             continue
