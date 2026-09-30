@@ -2,6 +2,8 @@
 // Next.js의 App Router에서는 이 파일이 <html>, <body> 태그를 담당하고,
 // 각 페이지(app/page.js 등)는 children 자리에 끼워진다.
 import "./globals.css";
+import { StoreProvider } from "../lib/store";
+import { loadInventory } from "../lib/data";
 
 export const metadata = {
   title: "시약관리대장",
@@ -9,9 +11,15 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // 바구니·반납 화면이 재고 정보를 알 수 있도록 서버에서 읽은 재고를 나눠 준다.
+  // (6차시에 DB를 붙이면 loadInventory 만 바뀐다)
+  const inventory = loadInventory();
+
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <StoreProvider inventory={inventory}>{children}</StoreProvider>
+      </body>
     </html>
   );
 }

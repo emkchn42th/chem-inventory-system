@@ -1,0 +1,30 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 96px;
+  padding: 18px 20px;
+  border: 1px solid #cdeeeb;
+  background: #eef9f8;
+  border-radius: 16px;
+}
+.useBox { border-color: #d5daf7; background: #f1f3fd; }
+.expiredBox { border-color: #f6c9ca; background: #fef7f7; }
+.msg { margin: 0; font-size: 0.93rem; line-height: 1.55; color: #33444c; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.primary, .secondary, .disabled {
+  display: inline-block;
+  text-align: center;
+  padding: 13px 22px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  text-decoration: none;
+}
+.primary { background: #00b2a9; color: #fff; }
+.primary:hover { background: #00857f; }
+.secondary { background: #fff; color: #33444c; border-color: #d8e0e4; }
+.secondary:hover { border-color: #e5484d; color: #e5484d; }
+.disabled { background: #e6ecef; color: #8a99a1; cursor: not-allowed; }

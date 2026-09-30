@@ -9,11 +9,12 @@
 //   4) 물리화학적 특성 (표)
 //   5) 안전관리     : 취급·저장방법, 응급조치, 예방·대응 조치문구 (접었다 펼치기)
 //
-// 재고 하나를 눌러 상세를 보고 바구니에 담는 기능은 5차시에서 만든다.
+// 재고 카드를 누르면 재고 상세(/stock/재고번호)로 이동해 바구니에 담을 수 있다. (5차시)
 
 import Link from "next/link";
 import styles from "./page.module.css";
 import SiteHeader from "../../../components/SiteHeader";
+import { LiveBadges } from "../../../components/LiveStatus";
 import { CATEGORIES } from "../../../lib/categories";
 import {
   loadReagents,
@@ -174,8 +175,9 @@ export default function ReagentDetailPage({ params }) {
                 const level = AMOUNT_LEVEL[row.남은양] ?? 0;
 
                 return (
-                  <article
+                  <Link
                     key={row.재고번호}
+                    href={`/stock/${row.재고번호}`}
                     className={`${styles.stockCard} ${
                       state === "expired" ? styles.stockExpired : ""
                     }`}
@@ -189,9 +191,7 @@ export default function ReagentDetailPage({ params }) {
                         {state === "soon" && (
                           <span className={styles.badgeSoon}>임박 D-{days}</span>
                         )}
-                        {row.현재상태 === "사용중" && (
-                          <span className={styles.badgeUse}>사용중</span>
-                        )}
+                        <LiveBadges id={row.재고번호} styles={styles} />
                       </div>
                     </div>
 
@@ -230,7 +230,8 @@ export default function ReagentDetailPage({ params }) {
                     </dl>
 
                     {row.비고 && <p className={styles.note}>📝 {row.비고}</p>}
-                  </article>
+                    <p className={styles.more}>상세 보기 · 바구니에 담기 ›</p>
+                  </Link>
                 );
               })}
             </div>

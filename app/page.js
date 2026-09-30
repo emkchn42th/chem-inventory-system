@@ -20,6 +20,7 @@ import {
   countByCategory,
   isExpired,
 } from "../lib/data";
+import { UseCount } from "../components/LiveStatus";
 
 // 페이지를 미리 만들어 두지 않고 열어볼 때마다 새로 그리게 한다.
 // (유효기한 만료 여부는 "오늘 날짜" 기준이라 미리 계산해두면 안 되기 때문)
@@ -64,7 +65,7 @@ export default function Home() {
             <div className={styles.summaryCard}>
               <p className={styles.summaryLabel}>사용중</p>
               <p className={styles.summaryValue}>
-                {summary.사용중}
+                <UseCount fallback={summary.사용중} />
                 <span className={styles.summaryUnit}>개</span>
               </p>
             </div>

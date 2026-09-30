@@ -1,0 +1,54 @@
+/* 바구니·반납 화면 공통 스타일 (5차시) */
+.container { max-width: 860px; margin: 0 auto; padding: 22px 20px 64px; }
+.head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 16px; }
+.title { margin: 0; font-size: 1.4rem; font-weight: 800; letter-spacing: -0.02em; }
+.count { font-weight: 800; color: #00968f; }
+.hint { margin: -8px 0 18px; color: #6b7b84; font-size: 0.92rem; }
+
+.list { display: flex; flex-direction: column; gap: 12px; }
+.item { display: flex; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid #e6ecef; border-radius: 16px; background: #fff; }
+.itemExpired { border-color: #f6c9ca; background: #fef7f7; }
+.place { flex-shrink: 0; min-width: 78px; text-align: center; background: #00b2a9; color: #fff; border-radius: 12px; padding: 10px 8px; font-size: 1.2rem; font-weight: 800; letter-spacing: 0.03em; }
+.placeLabel { display: block; font-size: 0.68rem; font-weight: 700; opacity: 0.85; letter-spacing: 0; margin-bottom: 2px; }
+.info { flex: 1; min-width: 0; }
+.name { display: inline-block; font-size: 1.1rem; font-weight: 800; color: inherit; text-decoration: none; }
+.name:hover { color: #00857f; }
+.meta { margin: 4px 0 0; font-size: 0.85rem; color: #6b7b84; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.warn { color: #e5484d; font-weight: 700; }
+.soon { color: #e8890c; font-weight: 700; }
+
+.remove, .returnBtn { flex-shrink: 0; cursor: pointer; border-radius: 10px; font-weight: 800; font-size: 0.92rem; padding: 10px 16px; }
+.remove { background: #fff; border: 1px solid #d8e0e4; color: #6b7b84; }
+.remove:hover { border-color: #e5484d; color: #e5484d; }
+.returnBtn { background: #5b6ee1; border: 1px solid #5b6ee1; color: #fff; }
+.returnBtn:hover { background: #4557c9; }
+
+.bar { position: sticky; bottom: 0; margin-top: 20px; padding: 14px 0; background: linear-gradient(to top, #fff 75%, transparent); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.barText { font-weight: 700; }
+.barActions { display: flex; gap: 8px; }
+.primary, .secondary { display: inline-block; text-align: center; padding: 14px 26px; border-radius: 12px; border: 1px solid transparent; font-size: 1.02rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+.primary { background: #00b2a9; color: #fff; }
+.primary:hover { background: #00857f; }
+.secondary { background: #fff; color: #33444c; border-color: #d8e0e4; }
+.secondary:hover { border-color: #00b2a9; color: #00857f; }
+
+.empty { padding: 44px 20px; text-align: center; background: #f8fafb; border: 1px solid #e6ecef; border-radius: 16px; }
+.emptyIcon { font-size: 2rem; }
+.emptyTitle { margin: 6px 0 4px; font-size: 1.1rem; font-weight: 700; }
+.emptyHint { margin: 0 0 18px; color: #6b7b84; font-size: 0.92rem; }
+
+.done { padding: 22px; border: 1px solid #cdeeeb; background: #eef9f8; border-radius: 16px; margin-bottom: 16px; }
+.doneTitle { margin: 0 0 4px; font-size: 1.2rem; font-weight: 800; color: #00857f; }
+.doneText { margin: 0; font-size: 0.93rem; color: #33444c; line-height: 1.55; }
+
+.subTitle { margin: 30px 0 12px; font-size: 1.05rem; font-weight: 800; }
+.history { margin: 0; padding: 0; list-style: none; border: 1px solid #e6ecef; border-radius: 14px; overflow: hidden; }
+.history li { display: flex; justify-content: space-between; gap: 10px; padding: 11px 16px; border-bottom: 1px solid #eef2f4; font-size: 0.9rem; flex-wrap: wrap; }
+.history li:last-child { border-bottom: none; }
+.historyTime { color: #6b7b84; }
+
+@media (max-width: 560px) {
+  .item { flex-wrap: wrap; }
+  .info { flex-basis: calc(100% - 100px); }
+  .remove, .returnBtn { width: 100%; }
+}

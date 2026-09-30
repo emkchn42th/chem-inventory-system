@@ -10,6 +10,7 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import SiteHeader from "../../components/SiteHeader";
+import { UseCount } from "../../components/LiveStatus";
 import { CATEGORIES } from "../../lib/categories";
 import {
   loadReagents,
@@ -159,7 +160,7 @@ export default function ReagentsPage({ searchParams }) {
                     </span>
                     <span className={styles.dot}>·</span>
                     <span>
-                      사용중 <strong>{stock.사용중}</strong>개
+                      사용중 <strong><UseCount name={reagent.시약명} fallback={stock.사용중} /></strong>개
                     </span>
                   </div>
                 </Link>

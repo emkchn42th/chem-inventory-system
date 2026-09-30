@@ -10,6 +10,7 @@
 
 import Link from "next/link";
 import styles from "./SiteHeader.module.css";
+import HeaderActions from "./HeaderActions";
 
 export default function SiteHeader({ keyword = "" }) {
   return (
@@ -22,15 +23,8 @@ export default function SiteHeader({ keyword = "" }) {
             시약관리대장
           </Link>
 
-          {/* 바구니·반납하기 화면은 5차시에 연결한다 */}
-          <div className={styles.actions}>
-            <button type="button" className={styles.actionButton}>
-              🧺 바구니
-            </button>
-            <button type="button" className={styles.actionButton}>
-              ↩ 반납하기
-            </button>
-          </div>
+          {/* 바구니·반납하기 버튼 (개수 표시가 있어서 별도 컴포넌트) */}
+          <HeaderActions />
         </div>
 
         <form action="/reagents" method="get" className={styles.searchBar}>
