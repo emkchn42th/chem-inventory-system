@@ -5,7 +5,7 @@
 //   /reagents?q=에탄        ->  이름에 "에탄"이 들어간 시약
 //   /reagents               ->  전체 시약
 //
-// 시약 카드를 눌렀을 때의 상세 화면은 4차시에서 만든다.
+// 시약 카드를 누르면 상세 화면(/reagents/시약이름)으로 이동한다. (4차시)
 
 import Link from "next/link";
 import styles from "./page.module.css";
@@ -116,7 +116,11 @@ export default function ReagentsPage({ searchParams }) {
               const stock = summarizeStock(inventory, reagent.시약명);
 
               return (
-                <article key={reagent.시약명} className={styles.card}>
+                <Link
+                  key={reagent.시약명}
+                  href={`/reagents/${encodeURIComponent(reagent.시약명)}`}
+                  className={styles.card}
+                >
                   <div className={styles.cardTop}>
                     <h2 className={styles.name}>{reagent.시약명}</h2>
                     {stock.만료 > 0 && (
@@ -158,7 +162,7 @@ export default function ReagentsPage({ searchParams }) {
                       사용중 <strong>{stock.사용중}</strong>개
                     </span>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>

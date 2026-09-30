@@ -1,0 +1,140 @@
+/* 시약 상세 화면 전용 스타일 (4차시)
+   색: 청록(#00b2a9) + 흰 바탕 / 위험·만료=빨강(#e5484d) / 임박=주황(#e8890c) */
+
+.page { min-height: 100vh; background: #ffffff; }
+
+.container { max-width: 1080px; margin: 0 auto; padding: 18px 20px 72px; }
+
+.back {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #00857f;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-decoration: none;
+}
+.back:hover { text-decoration: underline; }
+
+/* ===== 제목 ===== */
+.titleBlock { margin-bottom: 18px; }
+.titleRow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.title { margin: 0; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+.meta { margin: 6px 0 0; color: #6b7b84; font-size: 0.92rem; }
+
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  font-size: 0.82rem; font-weight: 700; padding: 5px 12px;
+  border-radius: 999px; background: #f1f4f5; color: #4a5a62;
+}
+.acid { background: #fdecf3; color: #b4235a; }
+.organic { background: #f0eefe; color: #5b4bd1; }
+.base { background: #e6f1fe; color: #1d64c7; }
+.metal { background: #fef5e7; color: #a8650a; }
+
+/* ===== 위험성 카드 ===== */
+.card {
+  border: 1px solid #f6c9ca; background: #fffafa;
+  border-radius: 16px; padding: 20px 22px; margin-bottom: 30px;
+}
+.cardHead { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.cardTitle { margin: 0; font-size: 1.1rem; font-weight: 800; }
+
+.signal { font-size: 0.85rem; font-weight: 800; padding: 4px 12px; border-radius: 6px; color: #fff; }
+.signalDanger { background: #e5484d; }
+.signalWarning { background: #e8890c; }
+
+.pictograms { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.pictogram {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: #ffffff; border: 1px solid #f0d4d5; border-radius: 10px;
+  padding: 7px 12px; font-size: 0.88rem; font-weight: 700;
+}
+.pictogramIcon { font-size: 1.15rem; }
+
+.classList { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.classChip {
+  font-size: 0.82rem; background: #ffffff; border: 1px solid #e6ecef;
+  border-radius: 6px; padding: 4px 9px; color: #4a5a62;
+}
+
+.statementList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.statement { display: flex; gap: 10px; align-items: baseline; font-size: 0.93rem; line-height: 1.5; }
+.code {
+  flex-shrink: 0; font-size: 0.78rem; font-weight: 800; color: #b4232a;
+  background: #fdeaea; border-radius: 5px; padding: 2px 7px; margin-right: 8px;
+}
+.statement .code { margin-right: 0; }
+
+/* ===== 섹션 공통 ===== */
+.section { margin-bottom: 34px; }
+.sectionHead { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+.sectionTitle { margin: 0 0 14px; font-size: 1.15rem; font-weight: 800; }
+.sectionHead .sectionTitle { margin: 0; }
+.count { font-size: 0.95rem; font-weight: 700; color: #00968f; }
+.expiredNote {
+  font-size: 0.8rem; font-weight: 700; color: #fff; background: #e5484d;
+  border-radius: 6px; padding: 3px 9px;
+}
+
+/* ===== 재고 카드 ===== */
+.stockGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.stockCard { border: 1px solid #e6ecef; border-radius: 16px; padding: 18px 20px; background: #fff; }
+.stockExpired { border-color: #f6c9ca; background: #fef7f7; }
+
+.stockTop { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.stockNo { font-weight: 800; }
+.badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.badgeExpired, .badgeSoon, .badgeUse {
+  font-size: 0.75rem; font-weight: 800; padding: 4px 9px; border-radius: 6px; color: #fff; white-space: nowrap;
+}
+.badgeExpired { background: #e5484d; }
+.badgeSoon { background: #e8890c; }
+.badgeUse { background: #5b6ee1; }
+
+.stockInfo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin: 0; }
+.stockInfo dt { font-size: 0.78rem; color: #6b7b84; margin-bottom: 3px; }
+.stockInfo dd { margin: 0; font-weight: 700; font-size: 0.95rem; }
+.place {
+  display: inline-block; background: #eef9f8; color: #00857f;
+  border-radius: 6px; padding: 2px 9px;
+}
+.dateExpired { color: #e5484d; }
+.dayNote { font-size: 0.8rem; font-weight: 600; }
+
+.amount { display: flex; align-items: center; gap: 8px; }
+.bars { display: inline-flex; gap: 3px; align-items: flex-end; }
+.bar { width: 7px; height: 14px; border-radius: 2px; background: #dfe6e9; }
+.bar:nth-child(1) { height: 8px; }
+.bar:nth-child(2) { height: 11px; }
+.barOn { background: #00b2a9; }
+
+.note { margin: 14px 0 0; padding-top: 12px; border-top: 1px solid #eef2f4; font-size: 0.87rem; color: #6b7b84; }
+.emptyStock { margin: 0; padding: 26px; text-align: center; color: #6b7b84; background: #f8fafb; border: 1px solid #e6ecef; border-radius: 12px; }
+
+/* ===== 특성 표 ===== */
+.tableWrap { border: 1px solid #e6ecef; border-radius: 14px; overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; font-size: 0.93rem; }
+.table th, .table td { padding: 11px 16px; text-align: left; border-bottom: 1px solid #eef2f4; }
+.table tr:last-child th, .table tr:last-child td { border-bottom: none; }
+.table th { width: 38%; background: #f8fafb; color: #4a5a62; font-weight: 700; }
+
+/* ===== 안전관리 아코디언 ===== */
+.accordions { display: flex; flex-direction: column; gap: 10px; }
+.accordion { border: 1px solid #e6ecef; border-radius: 14px; padding: 0 20px; background: #fff; }
+.accordion summary { cursor: pointer; padding: 16px 0; font-weight: 800; font-size: 1rem; }
+.accordion[open] { padding-bottom: 8px; }
+.group h3 { margin: 14px 0 6px; font-size: 0.9rem; color: #00857f; }
+.group ul { margin: 0 0 8px; padding-left: 20px; font-size: 0.92rem; line-height: 1.65; }
+.source { margin: 14px 0 0; font-size: 0.8rem; color: #8b9aa2; line-height: 1.5; }
+
+/* ===== 없는 시약 ===== */
+.notFound { padding: 48px 20px; text-align: center; background: #f8fafb; border: 1px solid #e6ecef; border-radius: 16px; }
+.notFoundTitle { margin: 0 0 6px; font-size: 1.15rem; font-weight: 800; }
+.notFoundHint { margin: 0 0 20px; color: #6b7b84; }
+.primaryLink { background: #00b2a9; color: #fff; padding: 10px 18px; border-radius: 10px; font-weight: 700; text-decoration: none; }
+
+@media (max-width: 600px) {
+  .title { font-size: 1.6rem; }
+  .stockGrid { grid-template-columns: 1fr; }
+  .table th { width: 44%; }
+}
