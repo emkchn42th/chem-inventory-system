@@ -1,104 +1,11 @@
 /* 메인 화면 전용 스타일
    색 기준: 청록(#00b2a9) + 흰 바탕
-   경고색: 빨강(#e5484d) — 유효기한 만료 표시용 */
+   경고색: 빨강(#e5484d) — 유효기한 만료 표시용
+   (헤더 스타일은 3차시에 components/SiteHeader.module.css 로 옮김) */
 
 .page {
   min-height: 100vh;
   background: #ffffff;
-}
-
-/* ===== 헤더 (화면 전체 폭을 청록으로 채운다) ===== */
-.header {
-  background: linear-gradient(135deg, #00b2a9 0%, #00857f 100%);
-  padding: 20px 0 28px;
-}
-
-.headerInner {
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-
-.headerTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: #ffffff;
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-
-.logoMark {
-  font-size: 1.5rem;
-}
-
-.headerActions {
-  display: flex;
-  gap: 8px;
-}
-
-.headerButton {
-  background: rgba(255, 255, 255, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
-  padding: 9px 16px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.headerButton:hover {
-  background: rgba(255, 255, 255, 0.32);
-}
-
-/* 검색란 */
-.searchBar {
-  display: flex;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
-}
-
-.searchInput {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  padding: 16px 18px;
-  font-size: 1rem;
-  color: #1a2b32;
-}
-
-.searchInput::placeholder {
-  color: #9aa8b0;
-}
-
-.searchButton {
-  border: none;
-  background: #00b2a9;
-  color: #ffffff;
-  padding: 0 28px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.searchButton:hover {
-  background: #00857f;
 }
 
 /* ===== 본문 공통 ===== */
@@ -169,6 +76,7 @@
   gap: 14px;
 }
 
+/* 3차시부터 카드가 링크(<a>)가 되어서 밑줄·파란 글씨를 없앤다 */
 .categoryCard {
   display: flex;
   flex-direction: column;
@@ -179,6 +87,8 @@
   border: 1px solid #e6ecef;
   border-radius: 16px;
   cursor: pointer;
+  color: inherit;
+  text-decoration: none;
   transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
 }
 
@@ -284,14 +194,6 @@
 
 /* ===== 좁은 화면(휴대폰) 대응 ===== */
 @media (max-width: 600px) {
-  .logo {
-    font-size: 1.2rem;
-  }
-
-  .searchButton {
-    padding: 0 18px;
-  }
-
   .alertMeta {
     margin-left: 0;
     width: 100%;

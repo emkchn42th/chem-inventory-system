@@ -1,18 +1,18 @@
-// 메인 화면 (2차시)
+// 메인 화면
 //
 // 계획서 3번 화면 스케치를 바탕으로, 네이버쇼핑·배달의민족처럼
-// 화면 폭을 꽉 채우는 구조로 다시 짰다.
+// 화면 폭을 꽉 채우는 구조로 짰다.
 //
 // 구성 순서
-//   1) 청록 헤더  : 서비스 이름 + 바구니/반납하기 버튼
-//   2) 검색란     : 헤더 안에 크게 배치
-//   3) 현황 요약  : 1차시 data 파일을 읽어 시약/재고 개수를 보여줌
-//   4) 카테고리   : 유기 / 무기 / 금속 / 산
-//   5) 만료 경고  : 유효기한이 지난 재고 목록
-//
-// 아직 버튼을 눌렀을 때의 동작(검색, 화면 이동)은 없다. 3차시에서 붙인다.
+//   1) 헤더       : 서비스 이름 + 바구니/반납하기 + 검색란 (components/SiteHeader.js)
+//   2) 현황 요약  : 1차시 data 파일을 읽어 시약/재고 개수를 보여줌
+//   3) 카테고리   : 산 / 유기 / 염기 / 금속 — 누르면 해당 목록 화면으로 이동 (3차시)
+//   4) 만료 경고  : 유효기한이 지난 재고 목록
 
+import Link from "next/link";
 import styles from "./page.module.css";
+import SiteHeader from "../components/SiteHeader";
+import { CATEGORIES } from "../lib/categories";
 import {
   loadReagents,
   loadInventory,
@@ -25,15 +25,6 @@ import {
 // (유효기한 만료 여부는 "오늘 날짜" 기준이라 미리 계산해두면 안 되기 때문)
 export const dynamic = "force-dynamic";
 
-// 카테고리 목록. key 는 카드 색깔을 고르는 데 쓴다.
-// 산은 붉은색, 염기는 푸른색 — 리트머스 종이 색과 맞췄다.
-const CATEGORIES = [
-  { name: "산", emoji: "💧", key: "acid" },
-  { name: "유기", emoji: "🧪", key: "organic" },
-  { name: "염기", emoji: "⚗️", key: "base" },
-  { name: "금속", emoji: "🔩", key: "metal" },
-];
-
 export default function Home() {
   // 1차시에 만든 데이터 파일을 읽어온다.
   const reagents = loadReagents();
@@ -45,34 +36,11 @@ export default function Home() {
 
   return (
     <div className={styles.page}>
-      {/* ===== 1~2. 헤더 + 검색란 ===== */}
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.headerTop}>
-            <div className={styles.logo}>
-              <span className={styles.logoMark}>🧪</span>
-              시약관리대장
-            </div>
-
-            <div className={styles.headerActions}>
-              <button className={styles.headerButton}>🧺 바구니</button>
-              <button className={styles.headerButton}>↩ 반납하기</button>
-            </div>
-          </div>
-
-          <div className={styles.searchBar}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="찾는 시약 이름을 입력하세요 (예: 에탄올, 염산)"
-            />
-            <button className={styles.searchButton}>검색</button>
-          </div>
-        </div>
-      </header>
+      {/* ===== 1. 헤더 + 검색란 ===== */}
+      <SiteHeader />
 
       <main className={styles.container}>
-        {/* ===== 3. 현황 요약 ===== */}
+        {/* ===== 2. 현황 요약 ===== */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>시약실 현황</h2>
 
@@ -120,13 +88,19 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ===== 4. 카테고리 ===== */}
+        {/* ===== 3. 카테고리 ===== */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>카테고리로 찾기</h2>
 
           <div className={styles.categoryGrid}>
             {CATEGORIES.map((category) => (
-              <button key={category.name} className={styles.categoryCard}>
+              // 누르면 /reagents?category=산 처럼 목록 화면으로 이동한다.
+              // query 에 한글을 넣어도 Next.js가 주소에 맞게 바꿔 준다.
+              <Link
+                key={category.name}
+                href={{ pathname: "/reagents", query: { category: category.name } }}
+                className={styles.categoryCard}
+              >
                 <span
                   className={`${styles.categoryIcon} ${styles[category.key]}`}
                 >
@@ -136,12 +110,12 @@ export default function Home() {
                 <span className={styles.categoryCount}>
                   시약 {categoryCounts[category.name] ?? 0}종
                 </span>
-              </button>
+              </Link>
             ))}
           </div>
         </section>
 
-        {/* ===== 5. 유효기한 만료 경고 ===== */}
+        {/* ===== 4. 유효기한 만료 경고 ===== */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>확인이 필요한 재고</h2>
 
