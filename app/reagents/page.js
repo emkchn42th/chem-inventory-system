@@ -93,6 +93,9 @@ export default async function ReagentsPage({ searchParams }) {
         <div className={styles.resultHead}>
           <h1 className={styles.resultTitle}>{title}</h1>
           <span className={styles.resultCount}>{results.length}종</span>
+          <Link href="/stock/new" className={styles.addButton}>
+            + 재고 추가
+          </Link>
         </div>
 
         {/* ===== 결과 목록 ===== */}

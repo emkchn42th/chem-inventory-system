@@ -1,0 +1,33 @@
+.form { display: flex; flex-direction: column; gap: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 0.9rem; font-weight: 800; color: #1a2b32; }
+.req { color: #e5484d; }
+.input {
+  width: 100%; padding: 13px 14px; font-size: 1rem; font-family: inherit; color: #1a2b32;
+  background: #fff; border: 1px solid #d8e0e4; border-radius: 12px; outline: none;
+}
+.input:focus { border-color: #00b2a9; box-shadow: 0 0 0 3px rgba(0, 178, 169, 0.15); }
+.input:disabled { background: #f1f4f5; color: #9aa8b0; }
+textarea.input { resize: vertical; }
+.twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 560px) { .twoCol { grid-template-columns: 1fr; } }
+.check { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.88rem; color: #4a5a62; cursor: pointer; }
+.radios { display: flex; gap: 8px; }
+.radio { flex: 1; cursor: pointer; }
+.radio input { position: absolute; opacity: 0; pointer-events: none; }
+.radio span {
+  display: block; text-align: center; padding: 12px; border: 1px solid #d8e0e4; border-radius: 12px;
+  font-weight: 800; color: #4a5a62; background: #fff;
+}
+.radio input:checked + span { background: #00b2a9; border-color: #00b2a9; color: #fff; }
+.radio input:focus-visible + span { box-shadow: 0 0 0 3px rgba(0, 178, 169, 0.25); }
+.hint { margin: 0; font-size: 0.82rem; color: #6b7b84; }
+.error { margin: 0; font-size: 0.85rem; font-weight: 700; color: #e5484d; }
+.alert { padding: 13px 16px; border-radius: 12px; background: #fef7f7; border: 1px solid #f6c9ca; color: #b4232a; font-weight: 700; font-size: 0.92rem; }
+.warn { padding: 13px 16px; border-radius: 12px; background: #fff8ec; border: 1px solid #f6dfb3; color: #8a5a07; font-size: 0.92rem; }
+.actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
+.cancel { padding: 14px 24px; border-radius: 12px; border: 1px solid #d8e0e4; color: #33444c; font-weight: 800; text-decoration: none; background: #fff; }
+.cancel:hover { border-color: #00b2a9; color: #00857f; }
+.submit { padding: 14px 30px; border-radius: 12px; border: none; background: #00b2a9; color: #fff; font-size: 1.02rem; font-weight: 800; cursor: pointer; }
+.submit:hover { background: #00857f; }
+.submit:disabled { background: #9ad8d4; cursor: wait; }

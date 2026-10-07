@@ -57,3 +57,5 @@
 .notFound { text-align: center; padding: 50px 20px; background: #f8fafb; border: 1px solid #e6ecef; border-radius: 16px; }
 .notFoundTitle { font-size: 1.1rem; font-weight: 700; }
 .link { color: #00857f; font-weight: 800; }
+
+.addedBanner { margin-bottom: 16px; padding: 14px 18px; border-radius: 12px; background: #eef9f8; border: 1px solid #cdeeeb; color: #00857f; font-weight: 800; }

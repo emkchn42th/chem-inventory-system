@@ -25,7 +25,7 @@ export const dynamic = "force-dynamic";
 
 const AMOUNT_LEVEL = { 상: 3, 중: 2, 하: 1 };
 
-export default async function StockDetailPage({ params }) {
+export default async function StockDetailPage({ params, searchParams }) {
   const inventory = await loadInventory();
   const row = inventory.find((item) => item.재고번호 === params.id);
 
@@ -59,6 +59,10 @@ export default async function StockDetailPage({ params }) {
         <Link href={`/reagents/${encodeURIComponent(row.시약명)}`} className={styles.back}>
           ← {row.시약명} 재고 목록으로
         </Link>
+
+        {searchParams?.added && (
+          <div className={styles.addedBanner}>✅ 재고가 추가되었어요. 아래 정보를 확인하세요.</div>
+        )}
 
         {/* ===== 1. 제목 ===== */}
         <section className={styles.titleBlock}>

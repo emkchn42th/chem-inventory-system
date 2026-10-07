@@ -164,6 +164,12 @@ export default async function ReagentDetailPage({ params }) {
             {expiredCount > 0 && (
               <span className={styles.expiredNote}>만료 {expiredCount}개</span>
             )}
+            <Link
+              href={`/stock/new?reagent=${encodeURIComponent(reagent.시약명)}`}
+              className={styles.addButton}
+            >
+              + 재고 추가
+            </Link>
           </div>
 
           {stockRows.length === 0 ? (
