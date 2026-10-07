@@ -26,10 +26,10 @@ import { UseCount } from "../components/LiveStatus";
 // (유효기한 만료 여부는 "오늘 날짜" 기준이라 미리 계산해두면 안 되기 때문)
 export const dynamic = "force-dynamic";
 
-export default function Home() {
+export default async function Home() {
   // 1차시에 만든 데이터 파일을 읽어온다.
-  const reagents = loadReagents();
-  const inventory = loadInventory();
+  const reagents = await loadReagents();
+  const inventory = await loadInventory();
 
   const summary = buildSummary(reagents, inventory);
   const categoryCounts = countByCategory(reagents);

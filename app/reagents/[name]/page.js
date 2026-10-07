@@ -45,11 +45,11 @@ function decodeName(value) {
 // 남은 양 "상/중/하" 를 막대로 보여주기 위한 표
 const AMOUNT_LEVEL = { 상: 3, 중: 2, 하: 1 };
 
-export default function ReagentDetailPage({ params }) {
+export default async function ReagentDetailPage({ params }) {
   const name = decodeName(params.name);
 
-  const reagents = loadReagents();
-  const inventory = loadInventory();
+  const reagents = await loadReagents();
+  const inventory = await loadInventory();
   const reagent = findReagent(reagents, name);
 
   // 없는 시약 주소로 들어온 경우

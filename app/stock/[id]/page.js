@@ -25,8 +25,8 @@ export const dynamic = "force-dynamic";
 
 const AMOUNT_LEVEL = { 상: 3, 중: 2, 하: 1 };
 
-export default function StockDetailPage({ params }) {
-  const inventory = loadInventory();
+export default async function StockDetailPage({ params }) {
+  const inventory = await loadInventory();
   const row = inventory.find((item) => item.재고번호 === params.id);
 
   if (!row) {
@@ -45,7 +45,7 @@ export default function StockDetailPage({ params }) {
     );
   }
 
-  const reagent = findReagent(loadReagents(), row.시약명);
+  const reagent = findReagent(await loadReagents(), row.시약명);
   const msds = reagent ? buildMsdsView(reagent) : null;
   const { state, days } = getExpiryInfo(row, new Date());
   const level = AMOUNT_LEVEL[row.남은양] ?? 0;

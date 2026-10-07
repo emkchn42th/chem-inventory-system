@@ -10,10 +10,13 @@ export const metadata = {
   description: "화학 시약 재고 및 안전관리 통합 시약관리대장 시스템",
 };
 
-export default function RootLayout({ children }) {
+// DB 내용이 바뀌면 바로 보이도록 매번 새로 그린다.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }) {
   // 바구니·반납 화면이 재고 정보를 알 수 있도록 서버에서 읽은 재고를 나눠 준다.
-  // (6차시에 DB를 붙이면 loadInventory 만 바뀐다)
-  const inventory = loadInventory();
+  // (6차시에 DB를 붙이면 loadInventory 가 DB에서 읽는다)
+  const inventory = await loadInventory();
 
   return (
     <html lang="ko">

@@ -36,14 +36,14 @@ function readParam(value) {
   return (first ?? "").trim();
 }
 
-export default function ReagentsPage({ searchParams }) {
+export default async function ReagentsPage({ searchParams }) {
   // 1) 주소에서 조건 꺼내기
   const category = readParam(searchParams.category);
   const keyword = readParam(searchParams.q);
 
   // 2) 데이터 읽기
-  const reagents = loadReagents();
-  const inventory = loadInventory();
+  const reagents = await loadReagents();
+  const inventory = await loadInventory();
 
   // 3) 조건에 맞게 거르고, 화면 제목도 조건에 맞춰 정한다
   let results;
