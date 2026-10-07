@@ -1,17 +1,35 @@
 "use client";
 
-// 반납하기 화면 (5차시)
-//   - 지금 "사용중"인 재고를 보여 준다.
-//   - [반납 완료]를 누르면 재고가 다시 "보관중"이 된다.
+// 반납하기 화면 (5차시, 8차시에 DB 저장으로 개편)
+//   - 지금 "사용중"인 재고를 보여 준다. (누가, 언제 빌렸는지 포함)
+//   - [반납 완료]를 누르면 서버가 DB의 재고 상태와 대여 기록을 갱신한다.
 
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./Ledger.module.css";
 import { useStore, formatDateTime } from "../lib/store";
+import { returnStock } from "../app/rental/actions";
 
 export default function ReturnView() {
-  const { ready, inUseRows, returnedLog, returnStock } = useStore();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  const [workingId, setWorkingId] = useState(null); // 지금 반납 처리 중인 재고
+  const [error, setError] = useState("");
+  const { ready, inUseRows, returnedLog } = useStore();
 
   if (!ready) return <main className={styles.container} aria-busy="true" />;
+
+  function handleReturn(id) {
+    setError("");
+    setWorkingId(id);
+    startTransition(async () => {
+      const result = await returnStock(id);
+      if (!result.ok) setError(result.message);
+      router.refresh();
+      setWorkingId(null);
+    });
+  }
 
   return (
     <main className={styles.container}>
@@ -19,6 +37,8 @@ export default function ReturnView() {
         <h1 className={styles.title}>반납하기</h1>
         <span className={styles.count}>{inUseRows.length}개</span>
       </div>
+
+      {error && <div className={styles.errorBox}>{error}</div>}
 
       {inUseRows.length === 0 ? (
         <div className={styles.empty}>
@@ -46,11 +66,17 @@ export default function ReturnView() {
                   <p className={styles.meta}>
                     <span>재고 #{row.재고번호}</span>
                     <span>남은 양 {row.남은양}</span>
+                    {row.borrower && <span>대여자 {row.borrower}</span>}
                     <span>{row.rentedAt ? `대여 ${formatDateTime(row.rentedAt)}` : "대여 기록 없음"}</span>
                   </p>
                 </div>
-                <button type="button" className={styles.returnBtn} onClick={() => returnStock(row.재고번호)}>
-                  반납 완료
+                <button
+                  type="button"
+                  className={styles.returnBtn}
+                  onClick={() => handleReturn(row.재고번호)}
+                  disabled={pending}
+                >
+                  {workingId === row.재고번호 ? "처리 중..." : "반납 완료"}
                 </button>
               </div>
             ))}
@@ -63,11 +89,12 @@ export default function ReturnView() {
           <h2 className={styles.subTitle}>최근 반납 기록</h2>
           <ul className={styles.history}>
             {returnedLog.map((entry) => (
-              <li key={entry.id + entry.returnedAt}>
+              <li key={entry.번호}>
                 <span>
-                  <b>{entry.row.시약명}</b> · 재고 #{entry.id} → {entry.row.보관위치}
+                  <b>{entry.row.시약명}</b> · 재고 #{entry.재고번호} → {entry.row.보관위치}
+                  {entry.대여자 && <span className={styles.historyTime}> · {entry.대여자}</span>}
                 </span>
-                <span className={styles.historyTime}>{formatDateTime(entry.returnedAt)} 반납</span>
+                <span className={styles.historyTime}>{formatDateTime(entry.반납시각)} 반납</span>
               </li>
             ))}
           </ul>

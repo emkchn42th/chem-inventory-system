@@ -3,7 +3,7 @@
 // 각 페이지(app/page.js 등)는 children 자리에 끼워진다.
 import "./globals.css";
 import { StoreProvider } from "../lib/store";
-import { loadInventory } from "../lib/data";
+import { loadInventory, loadRentals } from "../lib/data";
 
 export const metadata = {
   title: "시약관리대장",
@@ -14,14 +14,16 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({ children }) {
-  // 바구니·반납 화면이 재고 정보를 알 수 있도록 서버에서 읽은 재고를 나눠 준다.
-  // (6차시에 DB를 붙이면 loadInventory 가 DB에서 읽는다)
-  const inventory = await loadInventory();
+  // 바구니·반납 화면이 재고와 대여 기록을 알 수 있도록 서버에서 읽어 나눠 준다.
+  // 대여/반납 후 router.refresh() 를 하면 이 값이 새로 읽혀 모든 화면에 반영된다.
+  const [inventory, rentals] = await Promise.all([loadInventory(), loadRentals()]);
 
   return (
     <html lang="ko">
       <body>
-        <StoreProvider inventory={inventory}>{children}</StoreProvider>
+        <StoreProvider inventory={inventory} rentals={rentals}>
+          {children}
+        </StoreProvider>
       </body>
     </html>
   );
