@@ -10,6 +10,7 @@ import StockForm from "../../../components/StockForm";
 import { loadReagents, loadInventory } from "../../../lib/data";
 import { isSupabaseConfigured } from "../../../lib/supabase";
 import { todayText } from "../../../lib/stock-form";
+import { addStock } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,8 @@ export default async function NewStockPage({ searchParams }) {
 
         <div className={styles.card}>
           <StockForm
+            action={addStock}
+            cancelHref={defaultReagent ? `/reagents/${encodeURIComponent(defaultReagent)}` : "/reagents"}
             reagentNames={reagentNames}
             defaultReagent={defaultReagent}
             locations={locations}

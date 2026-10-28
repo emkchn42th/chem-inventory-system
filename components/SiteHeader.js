@@ -4,13 +4,14 @@
 //
 // 검색창은 <form> 으로 감쌌다. 엔터를 치거나 검색 버튼을 누르면
 // 브라우저가 알아서 /reagents?q=입력한글자 주소로 이동한다.
-// 자바스크립트 없이 HTML 기본 기능만으로 동작하는 방식이다.
+// 추가 기능 단계에서 자동완성을 붙이며 HeaderSearch 로 옮겼다.
 //
 // keyword : 목록 화면에서 방금 검색한 단어를 검색창에 다시 채워 넣을 때 쓴다.
 
 import Link from "next/link";
 import styles from "./SiteHeader.module.css";
 import HeaderActions from "./HeaderActions";
+import HeaderSearch from "./HeaderSearch";
 
 export default function SiteHeader({ keyword = "" }) {
   return (
@@ -19,7 +20,8 @@ export default function SiteHeader({ keyword = "" }) {
         <div className={styles.top}>
           {/* 로고를 누르면 메인 화면으로 돌아간다 */}
           <Link href="/" className={styles.logo}>
-            <span className={styles.logoMark}>🧪</span>
+            {/* 빨간 마름모 안전표지 모양 (CSS로 그림) */}
+            <span className={styles.logoMark} aria-hidden="true" />
             시약관리대장
           </Link>
 
@@ -27,19 +29,8 @@ export default function SiteHeader({ keyword = "" }) {
           <HeaderActions />
         </div>
 
-        <form action="/reagents" method="get" className={styles.searchBar}>
-          <input
-            key={keyword}
-            type="text"
-            name="q"
-            defaultValue={keyword}
-            className={styles.searchInput}
-            placeholder="찾는 시약 이름을 입력하세요 (예: 에탄올, 염산)"
-          />
-          <button type="submit" className={styles.searchButton}>
-            검색
-          </button>
-        </form>
+        {/* 검색창: 자동완성과 "/" 단축키가 있어서 별도 컴포넌트 (추가 기능 단계) */}
+        <HeaderSearch keyword={keyword} />
       </div>
     </header>
   );

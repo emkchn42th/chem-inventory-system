@@ -1,20 +1,21 @@
 "use client";
 
-// 재고 추가 입력 폼 (7차시)
-// 저장 버튼을 누르면 서버의 addStock(actions.js)이 실행된다.
+// 재고 입력 폼 (7차시: 추가, 추가 기능 단계: 수정에도 같이 씀)
+// 저장 버튼을 누르면 서버 함수(action)가 실행된다.
+//   추가 : app/stock/new/actions.js 의 addStock
+//   수정 : app/stock/[id]/edit/actions.js 의 updateStock
 // 검사에 걸리면 항목 아래에 빨간 안내가 나오고, 입력한 값은 그대로 남는다.
 
 import { useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import styles from "./StockForm.module.css";
-import { addStock } from "../app/stock/new/actions";
 
-function SubmitButton() {
+function SubmitButton({ label }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className={styles.submit} disabled={pending}>
-      {pending ? "저장 중..." : "재고 추가하기"}
+      {pending ? "저장 중..." : label}
     </button>
   );
 }
@@ -33,13 +34,26 @@ function Field({ label, required, error, hint, children }) {
   );
 }
 
-export default function StockForm({ reagentNames, defaultReagent, locations, today, dbReady }) {
-  const [state, formAction] = useFormState(addStock, null);
+// mode    : "add"(추가) 또는 "edit"(수정)
+// initial : 수정할 때 처음 채워 둘 값 { id, reagent, purchased, opened, unopened, expires, amount, location, note }
+export default function StockForm({
+  action,
+  mode = "add",
+  initial = {},
+  reagentNames,
+  defaultReagent,
+  locations,
+  today,
+  dbReady,
+  cancelHref = "/reagents",
+}) {
+  const [state, formAction] = useFormState(action, null);
   const errors = state?.errors ?? {};
-  const v = state?.values ?? {};
+  const v = state?.values ?? initial;
+  const isEdit = mode === "edit";
 
   // "아직 개봉 안 함" 체크 여부. 입력칸은 화면에 계속 남아 있으므로 값은 저절로 유지된다.
-  const [isUnopened, setUnopened] = useState(false);
+  const [isUnopened, setUnopened] = useState(Boolean(initial.unopened));
 
   return (
     <form action={formAction} className={styles.form} noValidate>
@@ -50,8 +64,20 @@ export default function StockForm({ reagentNames, defaultReagent, locations, tod
       )}
       {state?.message && <div className={styles.alert}>{state.message}</div>}
 
-      <Field label="시약" required error={errors.reagent}>
-        <select name="reagent" className={styles.input} defaultValue={v.reagent ?? defaultReagent ?? ""}>
+      {isEdit && <input type="hidden" name="id" value={initial.id} />}
+
+      <Field
+        label="시약"
+        required
+        error={errors.reagent}
+        hint={isEdit ? "시약 종류는 바꿀 수 없어요. 다른 시약이면 지우고 새로 추가하세요." : undefined}
+      >
+        <select
+          name="reagent"
+          className={styles.input}
+          defaultValue={v.reagent ?? defaultReagent ?? ""}
+          disabled={isEdit}
+        >
           <option value="">시약을 선택하세요</option>
           {reagentNames.map((name) => (
             <option key={name} value={name}>
@@ -79,7 +105,8 @@ export default function StockForm({ reagentNames, defaultReagent, locations, tod
             <input
               type="checkbox"
               name="unopened"
-                            onChange={(event) => setUnopened(event.target.checked)}
+              defaultChecked={Boolean(initial.unopened)}
+              onChange={(event) => setUnopened(event.target.checked)}
             />
             아직 개봉 안 함
           </label>
@@ -129,10 +156,10 @@ export default function StockForm({ reagentNames, defaultReagent, locations, tod
       </Field>
 
       <div className={styles.actions}>
-        <Link href="/reagents" className={styles.cancel}>
+        <Link href={cancelHref} className={styles.cancel}>
           취소
         </Link>
-        <SubmitButton />
+        <SubmitButton label={isEdit ? "수정 저장" : "재고 추가하기"} />
       </div>
     </form>
   );

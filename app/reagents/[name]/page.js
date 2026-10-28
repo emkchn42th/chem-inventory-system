@@ -15,6 +15,8 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import SiteHeader from "../../../components/SiteHeader";
 import { LiveBadges } from "../../../components/LiveStatus";
+import { TrackRecent } from "../../../components/RecentReagents";
+import PrintButton from "../../../components/PrintButton";
 import { CATEGORIES } from "../../../lib/categories";
 import {
   loadReagents,
@@ -87,9 +89,16 @@ export default async function ReagentDetailPage({ params }) {
       <SiteHeader />
 
       <main className={styles.container}>
-        <Link href="/reagents" className={styles.back}>
-          ← 목록으로
-        </Link>
+        {/* 최근 본 시약에 기록 (화면에는 아무것도 안 그림) */}
+        <TrackRecent name={reagent.시약명} />
+
+        <div className={`${styles.topBar} noPrint`}>
+          <Link href="/reagents" className={styles.back}>
+            ← 목록으로
+          </Link>
+          <PrintButton className={styles.printButton} label="🖨 MSDS 인쇄" />
+        </div>
+        <p className="printOnly">시약관리대장 · {reagent.시약명} 안전 정보 · 출력일 {new Date().toISOString().slice(0, 10)}</p>
 
         {/* ===== 1. 제목 ===== */}
         <section className={styles.titleBlock}>

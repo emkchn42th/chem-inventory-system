@@ -11,11 +11,23 @@ import Link from "next/link";
 import styles from "./Ledger.module.css";
 import { useStore } from "../lib/store";
 import { rentStocks } from "../app/rental/actions";
+import { useToast } from "./Toast";
+import { findDangerousPairs } from "../lib/hazard";
 
 export default function BasketView() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const { ready, basketRows, borrower, setBorrower, removeFromBasket, removeManyFromBasket } = useStore();
+  const {
+    ready,
+    basketRows,
+    borrower,
+    setBorrower,
+    addToBasket,
+    removeFromBasket,
+    removeManyFromBasket,
+    infoOf,
+  } = useStore();
+  const toast = useToast();
 
   const [done, setDone] = useState(null);   // 대여 결과 { rented, skipped }
   const [error, setError] = useState("");   // 실패 안내 글
@@ -25,6 +37,17 @@ export default function BasketView() {
   // 대여할 수 있는 재고 (이미 사용중이거나 유효기한이 지난 것은 제외)
   const isBlocked = (row) => row.현재상태 === "사용중" || row.expiry.state === "expired";
   const available = basketRows.filter((row) => !isBlocked(row));
+
+  // 함께 운반·보관하면 위험한 조합 (참고용 경고, 대여를 막지는 않음)
+  const dangers = findDangerousPairs(basketRows.map((row) => infoOf(row.시약명)).filter(Boolean));
+
+  function handleRemove(row) {
+    removeFromBasket(row.재고번호);
+    toast.show(`${row.시약명} #${row.재고번호} 를 뺐어요.`, {
+      duration: 5000,
+      action: { label: "실행 취소", onClick: () => addToBasket(row.재고번호) },
+    });
+  }
 
   function handleRent() {
     setError("");
@@ -36,6 +59,7 @@ export default function BasketView() {
       if (result.rented.length > 0) {
         removeManyFromBasket(result.rented.map((item) => item.id)); // 대여된 것만 바구니에서 뺀다
         setDone(result);
+        toast.show(`${result.rented.length}개 대여를 기록했어요.`, { tone: "success" });
       } else {
         setError(result.message || "대여하지 못했어요.");
         if (result.skipped.length > 0) setDone(null);
@@ -163,13 +187,30 @@ export default function BasketView() {
                   {inUse && <span className={styles.warn}>누군가 사용중 · 대여 불가</span>}
                 </p>
               </div>
-              <button type="button" className={styles.remove} onClick={() => removeFromBasket(row.재고번호)}>
+              <button type="button" className={styles.remove} onClick={() => handleRemove(row)}>
                 빼기
               </button>
             </div>
           );
         })}
       </div>
+
+      {dangers.length > 0 && (
+        <div className={styles.dangerBox} role="alert">
+          <p className={styles.dangerTitle}>⚠️ 함께 옮기거나 보관하면 위험한 조합이 있어요</p>
+          <ul>
+            {dangers.map((item) => (
+              <li key={item.title + item.pair.join()}>
+                <b>
+                  {item.pair[0]} + {item.pair[1]}
+                </b>{" "}
+                ({item.title}) — {item.message}
+              </li>
+            ))}
+          </ul>
+          <p className={styles.dangerNote}>따로 담아 옮기고, 실험대에서도 떨어뜨려 두세요. (참고용 안내이며, 정확한 규칙은 선생님께 확인하세요)</p>
+        </div>
+      )}
 
       <div className={styles.borrowerBox}>
         <label htmlFor="borrower" className={styles.borrowerLabel}>

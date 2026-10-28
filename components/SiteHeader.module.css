@@ -1,7 +1,7 @@
 /* 공통 헤더 스타일 (2차시에 app/page.module.css 에 있던 헤더 부분을 옮겨 옴) */
 
 .header {
-  background: linear-gradient(135deg, #00b2a9 0%, #00857f 100%);
+  background: linear-gradient(135deg, var(--header-from) 0%, var(--header-to) 100%);
   padding: 20px 0 28px;
 }
 
@@ -24,7 +24,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  color: #ffffff;
+  color: var(--on-accent);
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -43,9 +43,9 @@
 .actionButton {
   background: rgba(255, 255, 255, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+  color: var(--on-accent);
   padding: 9px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius);
   font-size: 0.92rem;
   font-weight: 600;
   cursor: pointer;
@@ -60,9 +60,9 @@
   min-width: 20px;
   height: 20px;
   padding: 0 6px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #00857f;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--accent-strong);
   font-size: 0.78rem;
   font-weight: 800;
   line-height: 20px;
@@ -76,8 +76,8 @@
 /* 검색란 */
 .searchBar {
   display: flex;
-  background: #ffffff;
-  border-radius: 12px;
+  background: var(--surface);
+  border-radius: var(--radius);
   overflow: hidden;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
 }
@@ -89,17 +89,17 @@
   outline: none;
   padding: 16px 18px;
   font-size: 1rem;
-  color: #1a2b32;
+  color: var(--text);
 }
 
 .searchInput::placeholder {
-  color: #9aa8b0;
+  color: var(--faint);
 }
 
 .searchButton {
   border: none;
-  background: #00b2a9;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--on-accent);
   padding: 0 28px;
   font-size: 1rem;
   font-weight: 700;
@@ -108,7 +108,7 @@
 }
 
 .searchButton:hover {
-  background: #00857f;
+  background: var(--accent-strong);
 }
 
 /* 좁은 화면(휴대폰) 대응 */
@@ -121,3 +121,163 @@
     padding: 0 18px;
   }
 }
+
+/* ===== 추가 기능 단계 ===== */
+.iconButton {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  justify-content: center;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 640px) {
+  .desktopOnly {
+    display: none;
+  }
+  .header {
+    padding: 14px 0 18px;
+  }
+  .top {
+    margin-bottom: 12px;
+  }
+}
+
+/* 검색 자동완성 */
+.searchWrap {
+  position: relative;
+}
+
+.suggest {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-pop);
+}
+
+.suggestItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.suggestActive {
+  background: var(--accent-soft);
+}
+
+.suggestName {
+  font-weight: 800;
+}
+
+.suggestName mark {
+  background: transparent;
+  color: var(--accent-strong);
+}
+
+.suggestMeta {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestIcons {
+  font-size: 0.95rem;
+  letter-spacing: 2px;
+}
+
+.suggestSignal {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius);
+  color: var(--on-accent);
+  background: var(--warn);
+}
+
+.suggestDanger {
+  background: var(--danger);
+}
+
+.suggestEmpty {
+  padding: 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.shortcutHint {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  padding: 2px 7px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  color: var(--faint);
+  align-self: center;
+}
+
+@media (max-width: 640px) {
+  .shortcutHint {
+    display: none;
+  }
+}
+
+
+/* ===== 테마 05: 실험실 안전표지 ===== */
+.header { position: relative; padding: 30px 0 24px; }
+.header::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 14px, #16191d 14px 28px);
+}
+.logo { font-weight: 700; letter-spacing: -0.01em; }
+.logoMark {
+  width: 22px; height: 22px; margin: 0 6px 0 4px; flex: none;
+  transform: rotate(45deg); border: 3px solid var(--danger); background: #ffffff;
+  display: grid; place-items: center; font-size: 0;
+}
+.logoMark::after { content: "!"; transform: rotate(-45deg); color: #16191d; font-weight: 800; font-size: 12px; line-height: 1; }
+.actionButton { background: transparent; border-color: rgba(255, 255, 255, 0.3); font-weight: 700; }
+.actionButton:hover { background: rgba(255, 255, 255, 0.1); border-color: #ffffff; }
+.countBadge { background: var(--stripe); color: #16191d; font-family: var(--mono); }
+.searchBar { box-shadow: none; border: 2px solid #ffffff; }
+.searchBar:focus-within { outline: 3px solid var(--stripe); outline-offset: 2px; }
+.searchInput { background: var(--surface); }
+.searchButton { background: var(--accent); }
+.shortcutHint { font-family: var(--mono); }
+.suggest { border: 2px solid var(--ink); box-shadow: var(--shadow-pop); }
+.suggestActive { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.suggestMeta { font-family: var(--mono); font-size: 0.78rem; }
+.suggestSignal { color: var(--on-warn); }
+.suggestDanger { color: var(--on-accent); }
+.searchButton { position: relative; overflow: hidden; isolation: isolate; }
+.searchButton::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: -1;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 6px, #16191d 6px 12px);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.searchButton:hover::after { transform: scaleX(1); }
+
+
+/* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
+.header { background: var(--surface); border-bottom: 1px solid var(--border); }
+.logo { color: var(--text); }
+.actionButton { color: var(--text-2); border-color: var(--border-strong); background: var(--surface); }
+.actionButton:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
+.searchBar { border: 2px solid var(--ink); }

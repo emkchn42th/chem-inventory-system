@@ -3,13 +3,19 @@
 // 반납하기 화면 (5차시, 8차시에 DB 저장으로 개편)
 //   - 지금 "사용중"인 재고를 보여 준다. (누가, 언제 빌렸는지 포함)
 //   - [반납 완료]를 누르면 서버가 DB의 재고 상태와 대여 기록을 갱신한다.
+//   - (추가 기능) 누른 뒤 5초 동안 "실행 취소"를 할 수 있다.
+//     5초 동안은 화면에서만 숨겨 두고, 시간이 지나면 그때 서버에 기록한다.
+//     5초 안에 다른 화면으로 가거나 창을 닫으면 바로 기록한다.
 
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./Ledger.module.css";
 import { useStore, formatDateTime } from "../lib/store";
 import { returnStock } from "../app/rental/actions";
+import { useToast } from "./Toast";
+
+const UNDO_MS = 5000;
 
 export default function ReturnView() {
   const router = useRouter();
@@ -17,30 +23,89 @@ export default function ReturnView() {
   const [workingId, setWorkingId] = useState(null); // 지금 반납 처리 중인 재고
   const [error, setError] = useState("");
   const { ready, inUseRows, returnedLog } = useStore();
+  const toast = useToast();
+  const [waiting, setWaiting] = useState([]); // 실행 취소를 기다리는 재고번호들
+  const timers = useRef(new Map());
+
+  // 실제로 서버에 반납을 기록한다
+  const commitReturn = useCallback(
+    (id) => {
+      clearTimeout(timers.current.get(id));
+      timers.current.delete(id);
+      setWorkingId(id);
+      startTransition(async () => {
+        const result = await returnStock(id);
+        if (!result.ok) {
+          setError(result.message);
+          setWaiting((list) => list.filter((item) => item !== id)); // 실패하면 다시 보이게
+        }
+        router.refresh(); // 성공하면 새로 읽은 목록에서 빠진다
+        setWorkingId(null);
+      });
+    },
+    [router]
+  );
+
+  // 화면을 떠나거나 창을 닫을 때, 기다리던 반납을 바로 기록한다
+  useEffect(() => {
+    const flush = () => {
+      timers.current.forEach((timer, id) => {
+        clearTimeout(timer);
+        returnStock(id);
+      });
+      timers.current.clear();
+    };
+    window.addEventListener("pagehide", flush);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
+    };
+  }, []);
+
+  // 서버 기록이 끝나 목록에서 사라진 번호는 대기 목록에서도 지운다
+  useEffect(() => {
+    setWaiting((list) => {
+      const next = list.filter(
+        (id) => timers.current.has(id) || inUseRows.some((row) => row.재고번호 === id)
+      );
+      return next.length === list.length ? list : next;
+    });
+  }, [inUseRows]);
 
   if (!ready) return <main className={styles.container} aria-busy="true" />;
 
-  function handleReturn(id) {
+  function handleReturn(row) {
+    const id = row.재고번호;
     setError("");
-    setWorkingId(id);
-    startTransition(async () => {
-      const result = await returnStock(id);
-      if (!result.ok) setError(result.message);
-      router.refresh();
-      setWorkingId(null);
+    setWaiting((list) => [...list, id]);
+    timers.current.set(id, setTimeout(() => commitReturn(id), UNDO_MS));
+    toast.show(`${row.시약명} #${id} 반납 완료! ${row.보관위치} 에 돌려놓았는지 확인하세요.`, {
+      tone: "success",
+      duration: UNDO_MS,
+      action: {
+        label: "실행 취소",
+        onClick: () => {
+          clearTimeout(timers.current.get(id));
+          timers.current.delete(id);
+          setWaiting((list) => list.filter((item) => item !== id));
+        },
+      },
     });
   }
+
+  // 실행 취소 대기 중인 것은 목록에서 숨긴다
+  const visibleRows = inUseRows.filter((row) => !waiting.includes(row.재고번호));
 
   return (
     <main className={styles.container}>
       <div className={styles.head}>
         <h1 className={styles.title}>반납하기</h1>
-        <span className={styles.count}>{inUseRows.length}개</span>
+        <span className={styles.count}>{visibleRows.length}개</span>
       </div>
 
       {error && <div className={styles.errorBox}>{error}</div>}
 
-      {inUseRows.length === 0 ? (
+      {visibleRows.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>✅</div>
           <p className={styles.emptyTitle}>반납할 재고가 없어요.</p>
@@ -53,7 +118,7 @@ export default function ReturnView() {
         <>
           <p className={styles.hint}>표시된 위치에 재고를 돌려놓은 뒤 &quot;반납 완료&quot;를 눌러 주세요.</p>
           <div className={styles.list}>
-            {inUseRows.map((row) => (
+            {visibleRows.map((row) => (
               <div key={row.재고번호} className={styles.item}>
                 <div className={styles.place}>
                   <span className={styles.placeLabel}>반납 위치</span>
@@ -73,7 +138,7 @@ export default function ReturnView() {
                 <button
                   type="button"
                   className={styles.returnBtn}
-                  onClick={() => handleReturn(row.재고번호)}
+                  onClick={() => handleReturn(row)}
                   disabled={pending}
                 >
                   {workingId === row.재고번호 ? "처리 중..." : "반납 완료"}

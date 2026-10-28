@@ -8,6 +8,11 @@
 //   2) 현황 요약  : 1차시 data 파일을 읽어 시약/재고 개수를 보여줌
 //   3) 카테고리   : 산 / 유기 / 염기 / 금속 — 누르면 해당 목록 화면으로 이동 (3차시)
 //   4) 만료 경고  : 유효기한이 지난 재고 목록
+//
+// 추가 기능 단계에서 더한 것
+//   - 맨 위 "유효기한 임박" 알림 배너 (30일 안)
+//   - 최근 본 시약 (이 브라우저 기준)
+//   - 주문이 필요한 시약 (재고 없음 / 잔량 부족)
 
 import Link from "next/link";
 import styles from "./page.module.css";
@@ -19,8 +24,14 @@ import {
   buildSummary,
   countByCategory,
   isExpired,
+  getExpiryInfo,
+  getOrderNeed,
 } from "../lib/data";
 import { UseCount } from "../components/LiveStatus";
+import { RecentReagents } from "../components/RecentReagents";
+
+// 알림 배너에 띄울 기준 (오늘부터 며칠 안에 끝나는 재고)
+const SOON_DAYS = 30;
 
 // 페이지를 미리 만들어 두지 않고 열어볼 때마다 새로 그리게 한다.
 // (유효기한 만료 여부는 "오늘 날짜" 기준이라 미리 계산해두면 안 되기 때문)
@@ -35,12 +46,44 @@ export default async function Home() {
   const categoryCounts = countByCategory(reagents);
   const expiredList = inventory.filter((row) => isExpired(row));
 
+  // 30일 안에 유효기한이 끝나는 재고 (이미 지난 것은 아래 "확인이 필요한 재고"에서 보여 줌)
+  const today = new Date();
+  const soonList = inventory
+    .map((row) => ({ ...row, expiry: getExpiryInfo(row, today) }))
+    .filter((row) => row.expiry.days !== null && row.expiry.days >= 0 && row.expiry.days <= SOON_DAYS)
+    .sort((a, b) => a.expiry.days - b.expiry.days);
+
+  // 주문이 필요한 시약
+  const orderList = reagents
+    .map((reagent) => ({ name: reagent.시약명, reason: getOrderNeed(inventory, reagent.시약명, today) }))
+    .filter((item) => item.reason);
+
   return (
     <div className={styles.page}>
       {/* ===== 1. 헤더 + 검색란 ===== */}
       <SiteHeader />
 
       <main className={styles.container}>
+        {/* ===== 유효기한 임박 알림 배너 ===== */}
+        {soonList.length > 0 && (
+          <div className={styles.soonBanner} role="alert">
+            <p className={styles.soonTitle}>
+              ⏰ {SOON_DAYS}일 안에 유효기한이 끝나는 재고 <strong>{soonList.length}개</strong>
+            </p>
+            <div className={styles.soonChips}>
+              {soonList.map((row) => (
+                <Link key={row.재고번호} href={`/stock/${row.재고번호}`} className={styles.soonChip}>
+                  {row.시약명} #{row.재고번호}
+                  <span className={styles.soonDay}>D-{row.expiry.days}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ===== 최근 본 시약 (브라우저에 기록이 있을 때만) ===== */}
+        <RecentReagents />
+
         {/* ===== 2. 현황 요약 ===== */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>시약실 현황</h2>
@@ -116,6 +159,26 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* ===== 주문이 필요한 시약 ===== */}
+        {orderList.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>주문이 필요한 시약</h2>
+            <div className={styles.orderList}>
+              {orderList.map((item) => (
+                <Link
+                  key={item.name}
+                  href={`/reagents/${encodeURIComponent(item.name)}`}
+                  className={styles.orderRow}
+                >
+                  <span className={styles.orderBadge}>주문 필요</span>
+                  <span className={styles.alertName}>{item.name}</span>
+                  <span className={styles.alertMeta}>{item.reason}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* ===== 4. 유효기한 만료 경고 ===== */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>확인이 필요한 재고</h2>
@@ -127,14 +190,14 @@ export default async function Home() {
           ) : (
             <div className={styles.alertList}>
               {expiredList.map((row) => (
-                <div key={row.재고번호} className={styles.alertRow}>
+                <Link key={row.재고번호} href={`/stock/${row.재고번호}`} className={styles.alertRow}>
                   <span className={styles.alertBadge}>만료</span>
                   <span className={styles.alertName}>{row.시약명}</span>
                   <span className={styles.alertPlace}>{row.보관위치}</span>
                   <span className={styles.alertMeta}>
                     유효기한 {row.유효기한}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           )}

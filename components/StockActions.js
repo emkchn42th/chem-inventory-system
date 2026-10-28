@@ -8,11 +8,31 @@
 //   유효기한 만료           -> 담기 불가 안내
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import styles from "./StockActions.module.css";
 import { useStore } from "../lib/store";
+import { useToast } from "./Toast";
 
 export default function StockActions({ id, expired, place }) {
   const { ready, statusOf, basket, addToBasket, removeFromBasket } = useStore();
+  const toast = useToast();
+  const router = useRouter();
+
+  function handleAdd() {
+    addToBasket(id);
+    toast.show(`재고 #${id} 를 바구니에 담았어요.`, {
+      tone: "success",
+      action: { label: "바구니 보기", onClick: () => router.push("/basket") },
+    });
+  }
+
+  function handleRemove() {
+    removeFromBasket(id);
+    toast.show(`재고 #${id} 를 바구니에서 뺐어요.`, {
+      action: { label: "실행 취소", onClick: () => addToBasket(id) },
+      duration: 5000,
+    });
+  }
 
   if (!ready) return <div className={styles.box} aria-busy="true" />;
 
@@ -55,7 +75,7 @@ export default function StockActions({ id, expired, place }) {
           <Link href="/basket" className={styles.primary}>
             🧺 바구니 보기
           </Link>
-          <button type="button" className={styles.secondary} onClick={() => removeFromBasket(id)}>
+          <button type="button" className={styles.secondary} onClick={handleRemove}>
             빼기
           </button>
         </div>
@@ -68,7 +88,7 @@ export default function StockActions({ id, expired, place }) {
       <p className={styles.msg}>
         필요한 재고라면 바구니에 담고, 바구니에서 <strong>대여하기</strong>를 누르세요.
       </p>
-      <button type="button" className={styles.primary} onClick={() => addToBasket(id)}>
+      <button type="button" className={styles.primary} onClick={handleAdd}>
         🧺 재고 바구니에 담기
       </button>
     </div>

@@ -1,18 +1,236 @@
-/* 모든 화면에 공통으로 적용되는 기본 스타일 */
+/* 모든 화면에 공통으로 적용되는 기본 스타일
+ *
+ * 색은 모두 아래 "색 변수(토큰)"로 관리한다. (추가 기능 단계)
+ * 화면 CSS에서는 #00b2a9 처럼 직접 쓰지 않고 var(--accent) 처럼 이름으로 쓴다.
+ * 그래서 이 파일의 값만 바꾸면 사이트 전체 색(테마)이 바뀌고,
+ * 다크 모드도 같은 이름에 어두운 값만 넣어 주면 된다.
+ */
+
+/* ===== 테마: 05 실험실 안전표지 =====
+ * 실험실 벽의 안전표지·시약병 라벨·모눈 실험노트를 옮겨 온 디자인.
+ * 안전색은 정해진 뜻으로만 쓴다.
+ *   빨강 = 위험·금지(만료, 삭제)   노랑 = 경고(임박)
+ *   초록 = 안전(사용중 = 안전하게 대여됨)   파랑 = 지시(주요 버튼)
+ */
+:root {
+  color-scheme: light;
+
+  /* 글꼴 */
+  --font: "IBM Plex Sans KR", "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
+    "Malgun Gothic", "맑은 고딕", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --radius: 2px;            /* 모서리: 거의 직각 */
+
+  /* 바탕 */
+  --bg: #fafaf7;            /* 모눈종이 바탕 */
+  --grid: #e9ecef;          /* 모눈 선 */
+  --surface: #ffffff;       /* 카드·입력칸 바탕 */
+  --surface-2: #f4f5f3;
+  --surface-3: #eceef0;
+
+  /* 선 */
+  --border: #c9cfd6;
+  --border-strong: #8f979f;
+  --line: #e3e6e9;
+  --ink: #4a525c;           /* 라벨 테두리 (짙은 회색) */
+
+  /* 글자 */
+  --text: #16191d;
+  --text-2: #2e343b;
+  --text-3: #4a525c;
+  --muted: #5e6670;
+  --faint: #7c848e;
+
+  /* 주 색 (지시 = 파랑) */
+  --accent: #0f5ba8;
+  --accent-strong: #0b4a8a;
+  --accent-soft: #e8f0f9;
+  --accent-border: #b9cfe8;
+  --accent-disabled: #9db8d8;
+  --on-accent: #ffffff;
+  --header-from: #ffffff;
+  --header-to: #ffffff;
+  --stripe: #f7c600;        /* 경고 줄무늬 노랑 */
+
+  /* 상태 색 */
+  --danger: #d3242b;
+  --danger-soft: #fdf1f1;
+  --danger-border: #f0c2c4;
+  --danger-text: #a3171d;
+  --warn: #f7c600;
+  --on-warn: #16191d;       /* 노랑 위 글자는 검정 */
+  --warn-soft: #fff8db;
+  --warn-border: #e6cd6e;
+  --warn-text: #6e5300;
+  --use: #0b7a43;
+  --use-strong: #09663a;
+  --use-soft: #e7f4ec;
+  --use-border: #b5dcc4;
+
+  /* 카테고리 태그 (산=빨강, 유기=노랑, 염기=파랑, 금속=회색) */
+  --tag-acid-bg: #fce9ea;
+  --tag-acid: #b01e24;
+  --tag-org-bg: #fff6cc;
+  --tag-org: #6b5500;
+  --tag-base-bg: #e6eff9;
+  --tag-base: #0f5ba8;
+  --tag-metal-bg: #eef0f2;
+  --tag-metal: #4a525c;
+
+  --shadow-pop: 0 10px 24px rgba(22, 25, 29, 0.16);
+}
+
+/* 다크 모드 값 (오른쪽 위 🌙 버튼 또는 컴퓨터 설정을 따른다) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg: #0f1215;
+  --grid: #191d22;
+  --surface: #171b20;
+  --surface-2: #1d2228;
+  --surface-3: #242a31;
+
+  --border: #313840;
+  --border-strong: #59616a;
+  --line: #252b32;
+  --ink: #c9cfd6;
+
+  --text: #eceef0;
+  --text-2: #cbd1d7;
+  --text-3: #aeb6be;
+  --muted: #8e979f;
+  --faint: #6c757e;
+
+  --accent: #2f7fd0;
+  --accent-strong: #7fb0e8;
+  --accent-soft: #14253a;
+  --accent-border: #24456b;
+  --accent-disabled: #24456b;
+  --on-accent: #ffffff;
+  --header-from: #08090b;
+  --header-to: #08090b;
+
+  --danger: #f0565b;
+  --danger-soft: #2a1517;
+  --danger-border: #5a2a2c;
+  --danger-text: #ff9ea1;
+  --warn: #f7c600;
+  --on-warn: #16191d;
+  --warn-soft: #2a2410;
+  --warn-border: #5a4a12;
+  --warn-text: #f5d65c;
+  --use: #23985c;
+  --use-strong: #0b7a43;
+  --use-soft: #11261b;
+  --use-border: #1f4d33;
+
+  --tag-acid-bg: #3a1618;
+  --tag-acid: #ff9ea1;
+  --tag-org-bg: #2e2810;
+  --tag-org: #f5d65c;
+  --tag-base-bg: #14253a;
+  --tag-base: #8dbaff;
+  --tag-metal-bg: #262b31;
+  --tag-metal: #c2c9d0;
+
+  --shadow-pop: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  background-color: #ffffff;
-  color: #1a2b32;
-  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui,
-    "Malgun Gothic", "맑은 고딕", sans-serif;
+  color: var(--text);
+  font-family: var(--font);
   -webkit-font-smoothing: antialiased;
+  /* 모눈종이 무늬 (24px 칸) */
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font-family: inherit;
+}
+
+input,
+select,
+textarea {
+  color: var(--text);
+  background-color: var(--surface);
+}
+
+/* 키보드로 이동할 때 어디에 있는지 잘 보이게 */
+:focus-visible {
+  outline: 3px solid var(--stripe);
+  outline-offset: 2px;
+}
+
+/* 움직임 줄이기 설정을 켠 사람에게는 애니메이션을 끈다 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== 로딩 뼈대(스켈레톤) ===== */
+.skeleton {
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--surface-3) 25%, var(--surface-2) 50%, var(--surface-3) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* ===== 휴대폰 하단 탭바 자리 확보 ===== */
+@media (max-width: 640px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+}
+
+/* ===== 인쇄용 ===== */
+.printOnly {
+  display: none;
+}
+@media print {
+  :root {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --text: #000000;
+  }
+  body {
+    padding-bottom: 0 !important;
+  }
+  .noPrint,
+  header,
+  nav {
+    display: none !important;
+  }
+  .printOnly {
+    display: block;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  details > summary {
+    list-style: none;
+  }
+  section,
+  article {
+    break-inside: avoid;
+  }
 }

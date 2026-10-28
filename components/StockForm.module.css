@@ -1,33 +1,54 @@
 .form { display: flex; flex-direction: column; gap: 20px; }
 .field { display: flex; flex-direction: column; gap: 6px; }
-.label { font-size: 0.9rem; font-weight: 800; color: #1a2b32; }
-.req { color: #e5484d; }
+.label { font-size: 0.9rem; font-weight: 800; color: var(--text); }
+.req { color: var(--danger); }
 .input {
-  width: 100%; padding: 13px 14px; font-size: 1rem; font-family: inherit; color: #1a2b32;
-  background: #fff; border: 1px solid #d8e0e4; border-radius: 12px; outline: none;
+  width: 100%; padding: 13px 14px; font-size: 1rem; font-family: inherit; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); outline: none;
 }
-.input:focus { border-color: #00b2a9; box-shadow: 0 0 0 3px rgba(0, 178, 169, 0.15); }
-.input:disabled { background: #f1f4f5; color: #9aa8b0; }
+.input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 91, 168, 0.15); }
+.input:disabled { background: var(--surface-3); color: var(--faint); }
 textarea.input { resize: vertical; }
 .twoCol { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media (max-width: 560px) { .twoCol { grid-template-columns: 1fr; } }
-.check { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.88rem; color: #4a5a62; cursor: pointer; }
+.check { display: flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 0.88rem; color: var(--text-3); cursor: pointer; }
 .radios { display: flex; gap: 8px; }
 .radio { flex: 1; cursor: pointer; }
 .radio input { position: absolute; opacity: 0; pointer-events: none; }
 .radio span {
-  display: block; text-align: center; padding: 12px; border: 1px solid #d8e0e4; border-radius: 12px;
-  font-weight: 800; color: #4a5a62; background: #fff;
+  display: block; text-align: center; padding: 12px; border: 1px solid var(--border-strong); border-radius: var(--radius);
+  font-weight: 800; color: var(--text-3); background: var(--surface);
 }
-.radio input:checked + span { background: #00b2a9; border-color: #00b2a9; color: #fff; }
-.radio input:focus-visible + span { box-shadow: 0 0 0 3px rgba(0, 178, 169, 0.25); }
-.hint { margin: 0; font-size: 0.82rem; color: #6b7b84; }
-.error { margin: 0; font-size: 0.85rem; font-weight: 700; color: #e5484d; }
-.alert { padding: 13px 16px; border-radius: 12px; background: #fef7f7; border: 1px solid #f6c9ca; color: #b4232a; font-weight: 700; font-size: 0.92rem; }
-.warn { padding: 13px 16px; border-radius: 12px; background: #fff8ec; border: 1px solid #f6dfb3; color: #8a5a07; font-size: 0.92rem; }
+.radio input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.radio input:focus-visible + span { box-shadow: 0 0 0 3px rgba(15, 91, 168, 0.25); }
+.hint { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.error { margin: 0; font-size: 0.85rem; font-weight: 700; color: var(--danger); }
+.alert { padding: 13px 16px; border-radius: var(--radius); background: var(--danger-soft); border: 1px solid var(--danger-border); color: var(--danger-text); font-weight: 700; font-size: 0.92rem; }
+.warn { padding: 13px 16px; border-radius: var(--radius); background: var(--warn-soft); border: 1px solid var(--warn-border); color: var(--warn-text); font-size: 0.92rem; }
 .actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
-.cancel { padding: 14px 24px; border-radius: 12px; border: 1px solid #d8e0e4; color: #33444c; font-weight: 800; text-decoration: none; background: #fff; }
-.cancel:hover { border-color: #00b2a9; color: #00857f; }
-.submit { padding: 14px 30px; border-radius: 12px; border: none; background: #00b2a9; color: #fff; font-size: 1.02rem; font-weight: 800; cursor: pointer; }
-.submit:hover { background: #00857f; }
-.submit:disabled { background: #9ad8d4; cursor: wait; }
+.cancel { padding: 14px 24px; border-radius: var(--radius); border: 1px solid var(--border-strong); color: var(--text-2); font-weight: 800; text-decoration: none; background: var(--surface); }
+.cancel:hover { border-color: var(--accent); color: var(--accent-strong); }
+.submit { padding: 14px 30px; border-radius: var(--radius); border: none; background: var(--accent); color: var(--on-accent); font-size: 1.02rem; font-weight: 800; cursor: pointer; }
+.submit:hover { background: var(--accent-strong); }
+.submit:disabled { background: var(--accent-disabled); cursor: wait; }
+
+
+/* ===== 테마 05: 실험실 안전표지 ===== */
+.input { border: 2px solid var(--border-strong); }
+.input:focus { border-color: var(--ink); box-shadow: none; outline: 3px solid var(--stripe); outline-offset: 1px; }
+.radio span { border: 2px solid var(--border-strong); font-family: var(--mono); }
+.radio input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--bg); box-shadow: inset 0 -3px 0 var(--danger); }
+.submit { background: var(--accent); }
+.alert { border: 2px solid var(--danger); }
+.warn { border: 2px solid var(--warn); }
+.submit { position: relative; overflow: hidden; isolation: isolate; }
+.submit::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: -1;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 6px, #16191d 6px 12px);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.submit:hover::after { transform: scaleX(1); }
+
+
+/* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
+.radio input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }

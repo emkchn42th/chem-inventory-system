@@ -5,7 +5,7 @@
 
 .page {
   min-height: 100vh;
-  background: #ffffff;
+  background: transparent;
 }
 
 /* ===== 본문 공통 ===== */
@@ -33,16 +33,16 @@
 }
 
 .summaryCard {
-  border: 1px solid #e6ecef;
-  border-radius: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 18px 20px;
-  background: #ffffff;
+  background: var(--surface);
 }
 
 .summaryLabel {
   margin: 0 0 6px;
   font-size: 0.87rem;
-  color: #6b7b84;
+  color: var(--muted);
 }
 
 .summaryValue {
@@ -55,18 +55,18 @@
 .summaryUnit {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #6b7b84;
+  color: var(--muted);
   margin-left: 3px;
 }
 
 /* 만료 재고가 있을 때만 붙는 강조 스타일 */
 .alertCard {
-  border-color: #f6c9ca;
-  background: #fef7f7;
+  border-color: var(--danger-border);
+  background: var(--danger-soft);
 }
 
 .alertValue {
-  color: #e5484d;
+  color: var(--danger);
 }
 
 /* ===== 카테고리 카드 ===== */
@@ -83,9 +83,9 @@
   align-items: center;
   gap: 10px;
   padding: 26px 16px;
-  background: #ffffff;
-  border: 1px solid #e6ecef;
-  border-radius: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   cursor: pointer;
   color: inherit;
   text-decoration: none;
@@ -94,8 +94,8 @@
 
 .categoryCard:hover {
   transform: translateY(-2px);
-  border-color: #00b2a9;
-  box-shadow: 0 8px 20px rgba(0, 178, 169, 0.15);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(15, 91, 168, 0.15);
 }
 
 .categoryIcon {
@@ -115,24 +115,24 @@
 
 .categoryCount {
   font-size: 0.86rem;
-  color: #6b7b84;
+  color: var(--muted);
 }
 
 /* 카테고리별 아이콘 배경색 (산=붉은색, 염기=푸른색으로 리트머스와 맞춤) */
 .acid {
-  background: #fdecf3;
+  background: var(--tag-acid-bg);
 }
 
 .organic {
-  background: #f0eefe;
+  background: var(--tag-org-bg);
 }
 
 .base {
-  background: #e6f1fe;
+  background: var(--tag-base-bg);
 }
 
 .metal {
-  background: #fef5e7;
+  background: var(--warn-soft);
 }
 
 /* ===== 유효기한 만료 목록 ===== */
@@ -147,19 +147,19 @@
   align-items: center;
   gap: 12px;
   padding: 14px 18px;
-  border: 1px solid #f6c9ca;
-  background: #fef7f7;
-  border-radius: 12px;
+  border: 1px solid var(--danger-border);
+  background: var(--danger-soft);
+  border-radius: var(--radius);
   flex-wrap: wrap;
 }
 
 .alertBadge {
-  background: #e5484d;
-  color: #ffffff;
+  background: var(--danger);
+  color: var(--on-accent);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 4px 9px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   white-space: nowrap;
 }
 
@@ -169,27 +169,27 @@
 
 .alertPlace {
   font-size: 0.87rem;
-  color: #6b7b84;
-  background: #ffffff;
-  border: 1px solid #e6ecef;
-  border-radius: 6px;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
   padding: 3px 9px;
 }
 
 .alertMeta {
   margin-left: auto;
   font-size: 0.9rem;
-  color: #6b7b84;
+  color: var(--muted);
 }
 
 .emptyText {
   margin: 0;
   padding: 26px;
   text-align: center;
-  color: #6b7b84;
-  background: #f8fafb;
-  border: 1px solid #e6ecef;
-  border-radius: 12px;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 /* ===== 좁은 화면(휴대폰) 대응 ===== */
@@ -199,3 +199,112 @@
     width: 100%;
   }
 }
+
+/* ===== 추가 기능 단계 ===== */
+.alertRow {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.12s;
+}
+.alertRow:hover {
+  border-color: var(--danger);
+}
+
+/* 유효기한 임박 배너 */
+.soonBanner {
+  margin-bottom: 28px;
+  padding: 16px 18px;
+  border: 1px solid var(--warn-border);
+  background: var(--warn-soft);
+  border-radius: var(--radius);
+}
+.soonTitle {
+  margin: 0 0 10px;
+  font-weight: 700;
+  color: var(--warn-text);
+}
+.soonChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.soonChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--warn-border);
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-decoration: none;
+}
+.soonChip:hover {
+  border-color: var(--warn);
+}
+.soonDay {
+  color: var(--warn-text);
+  font-weight: 800;
+}
+
+/* 주문 필요 */
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.orderRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+}
+.orderRow:hover {
+  border-color: var(--use);
+}
+.orderBadge {
+  background: var(--use);
+  color: var(--on-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 4px 9px;
+  border-radius: var(--radius);
+}
+
+/* 휴대폰: 현황 요약·카테고리를 2칸씩 */
+@media (max-width: 640px) {
+  .summaryGrid,
+  .categoryGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .summaryCard {
+    padding: 14px 16px;
+  }
+}
+
+
+/* ===== 테마 05: 실험실 안전표지 ===== */
+.sectionTitle { display: flex; align-items: center; gap: 8px; }
+.sectionTitle::before { content: ""; flex: none; width: 10px; height: 10px; background: var(--danger); }
+.summaryCard { border: 1px solid var(--border); }
+.summaryValue { font-family: var(--mono); letter-spacing: -0.03em; }
+.alertCard { border: 2px solid var(--danger); }
+.categoryCard:hover { border-color: var(--ink); box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }
+.categoryIcon { border-radius: var(--radius); }
+.alertPlace, .soonDay { font-family: var(--mono); }
+.alertBadge::before { content: "⊘ "; }
+.soonBanner { border: 2px solid var(--warn); position: relative; padding-top: 22px; }
+.soonBanner::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 10px, #16191d 10px 20px);
+}
+.orderBadge { background: var(--accent); }
+.orderRow:hover { border-color: var(--accent); }
+.metal { background: var(--tag-metal-bg); }

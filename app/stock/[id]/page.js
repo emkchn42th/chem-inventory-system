@@ -63,6 +63,9 @@ export default async function StockDetailPage({ params, searchParams }) {
         {searchParams?.added && (
           <div className={styles.addedBanner}>✅ 재고가 추가되었어요. 아래 정보를 확인하세요.</div>
         )}
+        {searchParams?.edited && (
+          <div className={styles.addedBanner}>✅ 수정한 내용을 저장했어요.</div>
+        )}
 
         {/* ===== 1. 제목 ===== */}
         <section className={styles.titleBlock}>
@@ -73,6 +76,9 @@ export default async function StockDetailPage({ params, searchParams }) {
             {state === "soon" && <span className={styles.badgeSoon}>임박 D-{days}</span>}
             <LiveBadges id={row.재고번호} styles={styles} />
           </div>
+          <Link href={`/stock/${row.재고번호}/edit`} className={`${styles.editLink} noPrint`}>
+            ✏️ 수정·삭제
+          </Link>
         </section>
 
         <div className={styles.layout}>

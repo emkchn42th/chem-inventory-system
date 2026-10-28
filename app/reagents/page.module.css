@@ -3,7 +3,7 @@
 
 .page {
   min-height: 100vh;
-  background: #ffffff;
+  background: transparent;
 }
 
 .container {
@@ -24,10 +24,10 @@
 .tab {
   flex-shrink: 0;
   padding: 9px 16px;
-  border: 1px solid #e6ecef;
-  border-radius: 999px;
-  background: #ffffff;
-  color: #1a2b32;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
   font-size: 0.93rem;
   font-weight: 600;
   text-decoration: none;
@@ -35,13 +35,13 @@
 }
 
 .tab:hover {
-  border-color: #00b2a9;
+  border-color: var(--accent);
 }
 
 .tabActive {
-  background: #00b2a9;
-  border-color: #00b2a9;
-  color: #ffffff;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
 }
 
 /* ===== 제목 + 결과 개수 ===== */
@@ -62,7 +62,7 @@
 .resultCount {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #00968f;
+  color: var(--accent-strong);
 }
 
 /* ===== 시약 카드 목록 ===== */
@@ -77,9 +77,9 @@
   flex-direction: column;
   gap: 10px;
   padding: 20px;
-  border: 1px solid #e6ecef;
-  border-radius: 16px;
-  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
   color: inherit;
   text-decoration: none;
   cursor: pointer;
@@ -88,8 +88,8 @@
 
 .card:hover {
   transform: translateY(-2px);
-  border-color: #00b2a9;
-  box-shadow: 0 8px 20px rgba(0, 178, 169, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 8px 20px rgba(15, 91, 168, 0.12);
 }
 
 .cardTop {
@@ -106,19 +106,19 @@
 }
 
 .expiredBadge {
-  background: #e5484d;
-  color: #ffffff;
+  background: var(--danger);
+  color: var(--on-accent);
   font-size: 0.75rem;
   font-weight: 700;
   padding: 4px 9px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   white-space: nowrap;
 }
 
 .meta {
   margin: 0;
   font-size: 0.86rem;
-  color: #6b7b84;
+  color: var(--muted);
 }
 
 /* 카테고리 태그 */
@@ -132,30 +132,30 @@
   font-size: 0.8rem;
   font-weight: 700;
   padding: 4px 10px;
-  border-radius: 999px;
-  background: #f1f4f5;
-  color: #4a5a62;
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  color: var(--text-3);
 }
 
 /* 태그 색 (메인 화면 카테고리 아이콘 색과 맞춤) */
 .acid {
-  background: #fdecf3;
-  color: #b4235a;
+  background: var(--tag-acid-bg);
+  color: var(--tag-acid);
 }
 
 .organic {
-  background: #f0eefe;
-  color: #5b4bd1;
+  background: var(--tag-org-bg);
+  color: var(--tag-org);
 }
 
 .base {
-  background: #e6f1fe;
-  color: #1d64c7;
+  background: var(--tag-base-bg);
+  color: var(--tag-base);
 }
 
 .metal {
-  background: #fef5e7;
-  color: #a8650a;
+  background: var(--warn-soft);
+  color: var(--warn-text);
 }
 
 /* 재고 현황 줄 */
@@ -165,26 +165,26 @@
   gap: 6px;
   margin-top: 2px;
   padding-top: 12px;
-  border-top: 1px solid #eef2f4;
+  border-top: 1px solid var(--line);
   font-size: 0.9rem;
-  color: #6b7b84;
+  color: var(--muted);
 }
 
 .stock strong {
-  color: #1a2b32;
+  color: var(--text);
 }
 
 .dot {
-  color: #c3ccd1;
+  color: var(--border-strong);
 }
 
 /* ===== 결과 없음 ===== */
 .empty {
   padding: 40px 20px;
   text-align: center;
-  background: #f8fafb;
-  border: 1px solid #e6ecef;
-  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
 }
 
 .emptyTitle {
@@ -195,7 +195,7 @@
 
 .emptyHint {
   margin: 0 0 20px;
-  color: #6b7b84;
+  color: var(--muted);
   font-size: 0.92rem;
 }
 
@@ -209,22 +209,212 @@
 .primaryLink,
 .secondaryLink {
   padding: 10px 18px;
-  border-radius: 10px;
+  border-radius: var(--radius);
   font-weight: 700;
   font-size: 0.93rem;
   text-decoration: none;
 }
 
 .primaryLink {
-  background: #00b2a9;
-  color: #ffffff;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 .secondaryLink {
-  background: #ffffff;
-  color: #1a2b32;
-  border: 1px solid #e6ecef;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
-.addButton { margin-left: auto; padding: 9px 18px; border-radius: 999px; background: #00b2a9; color: #fff; font-weight: 800; font-size: 0.9rem; text-decoration: none; }
-.addButton:hover { background: #00857f; }
+.addButton { margin-left: auto; padding: 9px 18px; border-radius: var(--radius); background: var(--accent); color: var(--on-accent); font-weight: 800; font-size: 0.9rem; text-decoration: none; }
+.addButton:hover { background: var(--accent-strong); }
+
+/* ===== 추가 기능 단계 ===== */
+
+/* 필터·정렬 줄 */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.filterChip {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.filterChip:hover {
+  border-color: var(--accent);
+}
+.filterActive {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+.sorts {
+  display: flex;
+  gap: 4px;
+}
+.sortLink {
+  padding: 6px 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--radius);
+}
+.sortLink:hover {
+  color: var(--text);
+}
+.sortActive {
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.badgeRow {
+  display: flex;
+  gap: 6px;
+}
+.orderBadge {
+  background: var(--use);
+  color: var(--on-accent);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 9px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+/* 호버 미리보기 — 카드 위에 겹쳐 뜬다 */
+.card {
+  position: relative;
+}
+.preview {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: calc(100% - 10px);
+  z-index: 20;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-pop);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(6px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  pointer-events: none;
+}
+/* 마우스가 있는 기기에서만, 0.3초 머무르면 보여 준다 */
+@media (hover: hover) {
+  .card:hover .preview {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition-delay: 0.3s;
+  }
+}
+.previewHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.previewTitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+.previewSignal {
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 3px 9px;
+  border-radius: var(--radius);
+  color: var(--on-accent);
+  background: var(--warn);
+}
+.previewDanger {
+  background: var(--danger);
+}
+.previewPicto {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--danger-text);
+  margin-bottom: 8px;
+}
+.previewList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  color: var(--text-2);
+}
+.previewOrder {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--use);
+}
+.previewMore {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-strong);
+  text-align: right;
+}
+
+
+/* ===== 테마 05: 실험실 안전표지 ===== */
+.card { border: 2px solid var(--ink); box-shadow: none; }
+.card:hover { transform: none; border-color: var(--danger); box-shadow: 0 0 0 4px rgba(211, 36, 43, 0.15); }
+.tab { font-weight: 700; }
+.tabActive { background: var(--ink); border-color: var(--ink); color: var(--bg); box-shadow: inset 0 -3px 0 var(--danger); }
+.resultTitle { display: flex; align-items: center; gap: 8px; }
+.resultTitle::before { content: ""; flex: none; width: 10px; height: 10px; background: var(--danger); }
+.resultCount, .meta { font-family: var(--mono); }
+.meta { font-size: 0.8rem; }
+.tag { font-family: var(--mono); font-size: 0.78rem; }
+.metal { background: var(--tag-metal-bg); color: var(--tag-metal); }
+.filterActive { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.sortActive { color: var(--accent); text-decoration: underline; text-underline-offset: 4px; }
+.expiredBadge::before { content: "⊘ "; }
+.orderBadge { background: var(--accent); }
+.previewOrder { color: var(--accent); }
+.preview { border: 2px solid var(--ink); }
+.previewSignal { color: var(--on-warn); }
+.previewDanger { color: var(--on-accent); }
+.addButton, .primaryLink { background: var(--accent); }
+.addButton { position: relative; overflow: hidden; isolation: isolate; }
+.addButton::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: -1;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 6px, #16191d 6px 12px);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.addButton:hover::after { transform: scaleX(1); }
+.primaryLink { position: relative; overflow: hidden; isolation: isolate; }
+.primaryLink::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: -1;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 6px, #16191d 6px 12px);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.primaryLink:hover::after { transform: scaleX(1); }
+
+
+/* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
+.tabActive, .filterActive { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }

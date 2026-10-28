@@ -3,11 +3,21 @@
 // 각 페이지(app/page.js 등)는 children 자리에 끼워진다.
 import "./globals.css";
 import { StoreProvider } from "../lib/store";
-import { loadInventory, loadRentals } from "../lib/data";
+import { loadInventory, loadRentals, loadReagents } from "../lib/data";
+import { buildReagentIndex } from "../lib/reagent-index";
+import { ToastProvider } from "../components/Toast";
+import MobileNav from "../components/MobileNav";
+import { themeScript } from "../components/ThemeToggle";
 
 export const metadata = {
   title: "시약관리대장",
   description: "화학 시약 재고 및 안전관리 통합 시약관리대장 시스템",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ffffff",
 };
 
 // DB 내용이 바뀌면 바로 보이도록 매번 새로 그린다.
@@ -16,13 +26,34 @@ export const dynamic = "force-dynamic";
 export default async function RootLayout({ children }) {
   // 바구니·반납 화면이 재고와 대여 기록을 알 수 있도록 서버에서 읽어 나눠 준다.
   // 대여/반납 후 router.refresh() 를 하면 이 값이 새로 읽혀 모든 화면에 반영된다.
-  const [inventory, rentals] = await Promise.all([loadInventory(), loadRentals()]);
+  // 시약 요약(이름·신호어·그림문자)은 검색 자동완성, 최근 본 시약, 위험 조합 경고에 쓴다.
+  const [inventory, rentals, reagents] = await Promise.all([
+    loadInventory(),
+    loadRentals(),
+    loadReagents(),
+  ]);
+  const reagentIndex = buildReagentIndex(reagents);
 
   return (
-    <html lang="ko">
+    // data-theme 은 아래 스크립트가 정하므로 서버와 달라도 경고하지 않게 한다
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        {/* 테마 05 글꼴: IBM Plex Sans KR(본문), IBM Plex Mono(CAS·재고번호·위치 같은 코드) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap"
+        />
+        {/* 화면이 그려지기 전에 라이트/다크를 먼저 정한다 (깜빡임 방지) */}
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body>
-        <StoreProvider inventory={inventory} rentals={rentals}>
-          {children}
+        <StoreProvider inventory={inventory} rentals={rentals} reagents={reagentIndex}>
+          <ToastProvider>
+            {children}
+            <MobileNav />
+          </ToastProvider>
         </StoreProvider>
       </body>
     </html>
