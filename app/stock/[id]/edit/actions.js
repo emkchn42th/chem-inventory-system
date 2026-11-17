@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 import { loadReagents, loadInventory } from "../../../../lib/data";
 import { isSupabaseConfigured, updateRows, deleteRows } from "../../../../lib/supabase";
 import { validateStockForm } from "../../../../lib/stock-form";
+import { getAccessToken } from "../../../../lib/auth";
+
+const NEED_LOGIN = { errors: {}, message: "로그인이 필요해요. 로그인한 뒤 다시 저장해 주세요." };
+
 
 const NO_DB = "DB가 연결되어 있지 않아 저장할 수 없어요. (.env.local 의 Supabase 설정을 확인하세요)";
 
@@ -15,6 +19,8 @@ export async function updateStock(prevState, formData) {
   const id = String(raw.id ?? "");
   if (!isSupabaseConfigured()) return { errors: {}, values: raw, message: NO_DB };
   if (!/^\d{1,9}$/.test(id)) return { errors: {}, values: raw, message: "잘못된 재고 번호예요." };
+  const token = getAccessToken();
+  if (!token) return { ...NEED_LOGIN, values: raw };
 
   const [reagents, inventory] = await Promise.all([loadReagents(), loadInventory()]);
   const current = inventory.find((row) => row.재고번호 === id);
@@ -44,16 +50,20 @@ export async function updateStock(prevState, formData) {
       opened_on: v.opened || null,
       expires_on: v.expires,
       amount: v.amount,
+      amount_mode: v.amountMode,
+      amount_value: v.amountMode === "정량" ? Number(v.amountValue) : null,
+      capacity: v.amountMode === "정량" ? Number(v.capacity) : null,
+      unit: v.amountMode === "정량" ? v.unit : null,
       location: v.location,
       note: v.note,
-    });
+    }, token);
     if (changed.length === 0) throw new Error("no row updated");
   } catch (error) {
     console.error(error);
     return {
       errors: {},
       values: v,
-      message: "저장하지 못했어요. Supabase 수정 권한(policies_extra.sql) 설정을 확인하세요.",
+      message: "저장하지 못했어요. Supabase 수정 권한(policies_auth.sql) 설정을 확인하세요.",
     };
   }
 
@@ -65,6 +75,8 @@ export async function deleteStock(idText) {
   const id = String(idText ?? "");
   if (!isSupabaseConfigured()) return { ok: false, message: NO_DB };
   if (!/^\d{1,9}$/.test(id)) return { ok: false, message: "잘못된 재고 번호예요." };
+  const token = getAccessToken();
+  if (!token) return { ok: false, message: NEED_LOGIN.message };
 
   const inventory = await loadInventory();
   const current = inventory.find((row) => row.재고번호 === id);
@@ -74,13 +86,13 @@ export async function deleteStock(idText) {
   }
 
   try {
-    const deleted = await deleteRows("inventory", `id=eq.${id}&status=eq.보관중`);
+    const deleted = await deleteRows("inventory", `id=eq.${id}&status=eq.보관중`, token);
     if (deleted.length === 0) return { ok: false, message: "지우지 못했어요. 방금 누군가 대여했을 수 있어요." };
   } catch (error) {
     console.error(error);
     return {
       ok: false,
-      message: "지우지 못했어요. Supabase 삭제 권한(policies_extra.sql) 설정을 확인하세요.",
+      message: "지우지 못했어요. Supabase 삭제 권한(policies_auth.sql) 설정을 확인하세요.",
     };
   }
   return { ok: true, message: "", name: current.시약명 };

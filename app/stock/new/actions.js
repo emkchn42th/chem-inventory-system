@@ -7,6 +7,10 @@ import { redirect } from "next/navigation";
 import { loadReagents, loadInventory } from "../../../lib/data";
 import { isSupabaseConfigured, insertRow } from "../../../lib/supabase";
 import { validateStockForm } from "../../../lib/stock-form";
+import { getAccessToken } from "../../../lib/auth";
+
+const NEED_LOGIN = { errors: {}, message: "로그인이 필요해요. 로그인한 뒤 다시 저장해 주세요." };
+
 
 // useFormState 로 부르면 (이전 결과, 폼 값) 두 개를 받는다.
 export async function addStock(prevState, formData) {
@@ -20,6 +24,10 @@ export async function addStock(prevState, formData) {
       message: "DB가 연결되어 있지 않아 저장할 수 없어요. (.env.local 의 Supabase 설정을 확인하세요)",
     };
   }
+
+  // 재고 추가는 로그인한 사람만 (DB 규칙에서도 한 번 더 막는다)
+  const token = getAccessToken();
+  if (!token) return { ...NEED_LOGIN, values: raw };
 
   const [reagents, inventory] = await Promise.all([loadReagents(), loadInventory()]);
 
@@ -46,16 +54,20 @@ export async function addStock(prevState, formData) {
       opened_on: v.opened || null,
       expires_on: v.expires,
       amount: v.amount,
+      amount_mode: v.amountMode,
+      amount_value: v.amountMode === "정량" ? Number(v.amountValue) : null,
+      capacity: v.amountMode === "정량" ? Number(v.capacity) : null,
+      unit: v.amountMode === "정량" ? v.unit : null,
       location: v.location,
       status: "보관중",
       note: v.note,
-    });
+    }, token);
   } catch (error) {
     console.error(error);
     return {
       errors: {},
       values: v,
-      message: "저장하지 못했어요. Supabase 쓰기 권한(7차시 SQL) 설정을 확인하세요.",
+      message: "저장하지 못했어요. Supabase 권한(policies_auth.sql) 설정을 확인하세요.",
     };
   }
 

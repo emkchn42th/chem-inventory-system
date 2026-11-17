@@ -105,3 +105,19 @@
 
 /* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
 .place { background: var(--accent); color: var(--on-accent); }
+
+
+/* ===== 로그인 기능 단계 ===== */
+.borrowerLine { margin: 18px 0 0; font-size: 0.93rem; color: var(--text-2); }
+.loginBox {
+  margin-top: 18px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  border: 2px solid var(--accent); background: var(--accent-soft); border-radius: var(--radius); font-size: 0.92rem;
+}
+.loginBox p { margin: 0; }
+.loginLink { padding: 9px 14px; background: var(--accent); color: var(--on-accent); font-weight: 700; text-decoration: none; border-radius: var(--radius); white-space: nowrap; }
+.loginLink:hover { background: var(--accent-strong); }
+.ownerNote { flex-shrink: 0; font-size: 0.82rem; font-weight: 700; color: var(--muted); max-width: 190px; text-align: right; word-break: keep-all; }
+.mineTag { display: inline-block; padding: 1px 7px; font-size: 0.72rem; font-weight: 700; background: var(--use); color: var(--on-accent); border-radius: var(--radius); }
+.filterRow { display: flex; gap: 6px; margin-bottom: 12px; }
+.filterBtn { padding: 7px 13px; border: 1px solid var(--border); background: var(--surface); color: var(--text-3); font-weight: 700; font-size: 0.86rem; cursor: pointer; border-radius: var(--radius); }
+.filterOn { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }

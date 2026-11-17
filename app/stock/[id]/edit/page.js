@@ -13,6 +13,8 @@ import { loadReagents, loadInventory } from "../../../../lib/data";
 import { isSupabaseConfigured } from "../../../../lib/supabase";
 import { todayText } from "../../../../lib/stock-form";
 import { updateStock } from "./actions";
+import { getUser } from "../../../../lib/auth";
+import LoginRequired from "../../../../components/LoginRequired";
 
 export const dynamic = "force-dynamic";
 
@@ -44,6 +46,10 @@ export default async function EditStockPage({ params }) {
     unopened: !row.개봉일,
     expires: row.유효기한,
     amount: row.남은양 || "상",
+    amountMode: row.잔량방식 || "정성",
+    amountValue: row.잔량값,
+    capacity: row.전체용량,
+    unit: row.단위 || "mL",
     location: row.보관위치,
     note: row.비고,
   };
@@ -61,21 +67,28 @@ export default async function EditStockPage({ params }) {
         </h1>
         <p className={styles.sub}>바뀐 내용만 고친 뒤 저장하세요. 남은 양이 줄었을 때도 여기서 바꿔요.</p>
 
-        <div className={styles.card}>
-          <StockForm
-            action={updateStock}
-            mode="edit"
-            initial={initial}
-            reagentNames={reagents.map((reagent) => reagent.시약명)}
-            defaultReagent={row.시약명}
-            locations={locations}
-            today={todayText()}
-            dbReady={isSupabaseConfigured()}
-            cancelHref={`/stock/${row.재고번호}`}
-          />
-        </div>
+        {/* 로그인한 사람만 수정·삭제할 수 있다 */}
+        {getUser() ? (
+          <>
+            <div className={styles.card}>
+              <StockForm
+                action={updateStock}
+                mode="edit"
+                initial={initial}
+                reagentNames={reagents.map((reagent) => reagent.시약명)}
+                defaultReagent={row.시약명}
+                locations={locations}
+                today={todayText()}
+                dbReady={isSupabaseConfigured()}
+                cancelHref={`/stock/${row.재고번호}`}
+              />
+            </div>
 
-        <DeleteStock id={row.재고번호} name={row.시약명} inUse={row.현재상태 === "사용중"} />
+            <DeleteStock id={row.재고번호} name={row.시약명} inUse={row.현재상태 === "사용중"} />
+          </>
+        ) : (
+          <LoginRequired next={`/stock/${row.재고번호}/edit`} what="재고 수정·삭제" />
+        )}
       </main>
     </div>
   );

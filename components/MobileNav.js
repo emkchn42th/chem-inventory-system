@@ -19,8 +19,8 @@ const TABS = [
 
 export default function MobileNav() {
   const pathname = usePathname() ?? "/";
-  const { ready, basket, inUseRows } = useStore();
-  const counts = { basket: ready ? basket.length : 0, inuse: ready ? inUseRows.length : 0 };
+  const { ready, basket, myInUseRows } = useStore();
+  const counts = { basket: ready ? basket.length : 0, inuse: ready ? myInUseRows.length : 0 };
 
   return (
     <nav className={styles.nav} aria-label="주요 메뉴">

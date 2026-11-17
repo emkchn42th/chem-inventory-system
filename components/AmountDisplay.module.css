@@ -1,0 +1,20 @@
+.qual { display: inline-flex; align-items: center; gap: 8px; }
+.bars { display: inline-flex; gap: 3px; align-items: flex-end; }
+.bar { width: 7px; height: 14px; border-radius: 1px; background: var(--surface-3); border: 1px solid var(--border); }
+.bar:nth-child(1) { height: 8px; }
+.bar:nth-child(2) { height: 11px; }
+.barOn { background: var(--accent); border-color: var(--accent); }
+
+.quant { display: inline-flex; flex-direction: column; gap: 5px; width: 100%; max-width: 260px; }
+.meter { position: relative; display: block; height: 10px; border: 1px solid var(--ink); background: var(--surface-2); overflow: hidden; }
+.fill { position: absolute; inset: 0 auto 0 0; background: var(--accent); }
+.mid { background: var(--warn); }
+.low { background: var(--danger); }
+.numbers { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; }
+.modeTag {
+  align-self: flex-start; font-family: var(--mono); font-size: 0.68rem; font-weight: 600;
+  padding: 1px 6px; border: 1px solid var(--border-strong); color: var(--muted);
+}
+.large { max-width: none; }
+.large .meter { height: 14px; }
+.large .numbers { font-size: 1rem; }

@@ -3,6 +3,7 @@
 // 반납하기 화면 (5차시, 8차시에 DB 저장으로 개편)
 //   - 지금 "사용중"인 재고를 보여 준다. (누가, 언제 빌렸는지 포함)
 //   - [반납 완료]를 누르면 서버가 DB의 재고 상태와 대여 기록을 갱신한다.
+//   - (로그인 기능) 내가 빌린 재고만 반납할 수 있다. 다른 사람 것은 버튼 대신 안내가 보인다.
 //   - (추가 기능) 누른 뒤 5초 동안 "실행 취소"를 할 수 있다.
 //     5초 동안은 화면에서만 숨겨 두고, 시간이 지나면 그때 서버에 기록한다.
 //     5초 안에 다른 화면으로 가거나 창을 닫으면 바로 기록한다.
@@ -14,6 +15,7 @@ import styles from "./Ledger.module.css";
 import { useStore, formatDateTime } from "../lib/store";
 import { returnStock } from "../app/rental/actions";
 import { useToast } from "./Toast";
+import { describeAmount } from "../lib/amount";
 
 const UNDO_MS = 5000;
 
@@ -22,7 +24,8 @@ export default function ReturnView() {
   const [pending, startTransition] = useTransition();
   const [workingId, setWorkingId] = useState(null); // 지금 반납 처리 중인 재고
   const [error, setError] = useState("");
-  const { ready, inUseRows, returnedLog } = useStore();
+  const { ready, inUseRows, returnedLog, user } = useStore();
+  const [onlyMine, setOnlyMine] = useState(true); // 기본은 "내가 빌린 것만"
   const toast = useToast();
   const [waiting, setWaiting] = useState([]); // 실행 취소를 기다리는 재고번호들
   const timers = useRef(new Map());
@@ -94,7 +97,10 @@ export default function ReturnView() {
   }
 
   // 실행 취소 대기 중인 것은 목록에서 숨긴다
-  const visibleRows = inUseRows.filter((row) => !waiting.includes(row.재고번호));
+  const showMine = Boolean(user) && onlyMine;
+  const visibleRows = inUseRows.filter(
+    (row) => !waiting.includes(row.재고번호) && (!showMine || row.mine)
+  );
 
   return (
     <main className={styles.container}>
@@ -105,11 +111,45 @@ export default function ReturnView() {
 
       {error && <div className={styles.errorBox}>{error}</div>}
 
+      {!user ? (
+        <div className={styles.loginBox}>
+          <p>
+            <b>반납하려면 로그인이 필요해요.</b> 내가 빌린 재고만 반납할 수 있어요.
+          </p>
+          <Link href="/login?next=/return" className={styles.loginLink}>
+            로그인
+          </Link>
+        </div>
+      ) : (
+        <div className={styles.filterRow} role="group" aria-label="보기">
+          <button
+            type="button"
+            className={`${styles.filterBtn} ${onlyMine ? styles.filterOn : ""}`}
+            onClick={() => setOnlyMine(true)}
+            aria-pressed={onlyMine}
+          >
+            내가 빌린 것
+          </button>
+          <button
+            type="button"
+            className={`${styles.filterBtn} ${!onlyMine ? styles.filterOn : ""}`}
+            onClick={() => setOnlyMine(false)}
+            aria-pressed={!onlyMine}
+          >
+            전체 사용중
+          </button>
+        </div>
+      )}
+
       {visibleRows.length === 0 ? (
         <div className={styles.empty}>
           <div className={styles.emptyIcon}>✅</div>
           <p className={styles.emptyTitle}>반납할 재고가 없어요.</p>
-          <p className={styles.emptyHint}>사용중인 재고가 없습니다.</p>
+          <p className={styles.emptyHint}>
+            {showMine
+              ? "내가 빌린 재고가 없어요. '전체 사용중'에서 다른 재고를 볼 수 있어요. (로그인 기능 전에 빌린 재고도 거기서 반납할 수 있어요)"
+              : "사용중인 재고가 없습니다."}
+          </p>
           <Link href="/" className={styles.primary}>
             메인으로
           </Link>
@@ -130,19 +170,26 @@ export default function ReturnView() {
                   </Link>
                   <p className={styles.meta}>
                     <span>재고 #{row.재고번호}</span>
-                    <span>남은 양 {row.남은양}</span>
+                    <span>남은 양 {describeAmount(row).text}</span>
+                    {row.mine && <span className={styles.mineTag}>내 대여</span>}
                     {row.borrower && <span>대여자 {row.borrower}</span>}
                     <span>{row.rentedAt ? `대여 ${formatDateTime(row.rentedAt)}` : "대여 기록 없음"}</span>
                   </p>
                 </div>
-                <button
-                  type="button"
-                  className={styles.returnBtn}
-                  onClick={() => handleReturn(row)}
-                  disabled={pending}
-                >
-                  {workingId === row.재고번호 ? "처리 중..." : "반납 완료"}
-                </button>
+                {row.canReturn ? (
+                  <button
+                    type="button"
+                    className={styles.returnBtn}
+                    onClick={() => handleReturn(row)}
+                    disabled={pending}
+                  >
+                    {workingId === row.재고번호 ? "처리 중..." : "반납 완료"}
+                  </button>
+                ) : (
+                  <span className={styles.ownerNote}>
+                    {user ? "다른 사람이 빌린 재고예요" : "로그인 후 반납"}
+                  </span>
+                )}
               </div>
             ))}
           </div>

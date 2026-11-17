@@ -3,6 +3,7 @@
 // 주소 예) /history                 전체 기록 (최근 것부터)
 //          /history?status=open     아직 반납 안 된 것만
 //          /history?q=에탄올         시약 이름이나 대여자로 찾기
+//          /history?status=mine     내가 빌린 기록만 (로그인했을 때)
 //
 // 재고 목록과 대여 기록을 CSV(엑셀)로 내려받을 수 있다.
 
@@ -13,6 +14,7 @@ import PrintButton from "../../components/PrintButton";
 import { loadInventory, loadRentals } from "../../lib/data";
 import { isSupabaseConfigured } from "../../lib/supabase";
 import { formatKST } from "../../lib/format";
+import { getUser } from "../../lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,7 @@ const STATUS = [
   { key: "", label: "전체" },
   { key: "open", label: "사용중" },
   { key: "returned", label: "반납 완료" },
+  { key: "mine", label: "내 기록" },
 ];
 
 const read = (value) => (Array.isArray(value) ? value[0] : value ?? "").trim();
@@ -32,6 +35,8 @@ export default async function HistoryPage({ searchParams }) {
   const status = STATUS.some((item) => item.key === read(searchParams.status)) ? read(searchParams.status) : "";
 
   const [inventory, rentals] = await Promise.all([loadInventory(), loadRentals()]);
+  const user = getUser();
+  const tabs = STATUS.filter((item) => item.key !== "mine" || user);
   const byId = new Map(inventory.map((row) => [row.재고번호, row]));
 
   const all = rentals.map((rental) => ({ ...rental, stock: byId.get(rental.재고번호) ?? null }));
@@ -39,6 +44,7 @@ export default async function HistoryPage({ searchParams }) {
   const list = all.filter((item) => {
     if (status === "open" && item.반납시각) return false;
     if (status === "returned" && !item.반납시각) return false;
+    if (status === "mine" && (!user || item.사용자 !== user.id)) return false;
     if (!word) return true;
     return [item.stock?.시약명, item.대여자, `#${item.재고번호}`].some((text) => normalize(text).includes(word));
   });
@@ -102,7 +108,7 @@ export default async function HistoryPage({ searchParams }) {
             </button>
           </form>
           <div className={styles.tabs}>
-            {STATUS.map((item) => (
+            {tabs.map((item) => (
               <Link
                 key={item.key || "all"}
                 href={linkWith({ status: item.key })}

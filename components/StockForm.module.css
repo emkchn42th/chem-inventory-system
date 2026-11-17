@@ -52,3 +52,24 @@ textarea.input { resize: vertical; }
 
 /* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
 .radio input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+/* ===== 남은 양 정량/정성 선택 ===== */
+.modeSwitch { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.modeButton {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+  padding: 10px 12px; text-align: left; cursor: pointer;
+  border: 2px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--text);
+}
+.modeButton b { font-size: 0.92rem; }
+.modeButton span { font-size: 0.78rem; color: var(--muted); }
+.modeButton:hover { border-color: var(--accent); }
+.modeActive { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 -3px 0 var(--accent); }
+.modeActive b { color: var(--accent-strong); }
+.quant { display: grid; grid-template-columns: 1fr auto 1fr 90px; align-items: end; gap: 8px; }
+.quantField { display: flex; flex-direction: column; gap: 4px; font-size: 0.8rem; font-weight: 700; color: var(--text-3); }
+.quantField .input { font-family: var(--mono); }
+.slash { padding-bottom: 12px; font-size: 1.2rem; color: var(--faint); }
+@media (max-width: 480px) {
+  .quant { grid-template-columns: 1fr 1fr; }
+  .slash { display: none; }
+}

@@ -1,0 +1,32 @@
+.tabs { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 20px; border: 2px solid var(--ink); }
+.tab { padding: 11px 0; text-align: center; font-weight: 700; color: var(--text-3); text-decoration: none; background: var(--surface); }
+.tab + .tab { border-left: 2px solid var(--ink); }
+.tab:hover { background: var(--surface-2); }
+.tabActive { background: var(--accent); color: var(--on-accent); box-shadow: inset 0 -3px 0 var(--danger); }
+.tabActive:hover { background: var(--accent); }
+.form { display: flex; flex-direction: column; gap: 16px; }
+.twoCol { display: grid; grid-template-columns: 1fr 1.4fr; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 0.88rem; font-weight: 700; }
+.input { width: 100%; padding: 12px 13px; font-size: 1rem; border: 2px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--text); outline: none; }
+.input:focus { border-color: var(--ink); outline: 3px solid var(--stripe); outline-offset: 1px; }
+.hint { font-size: 0.8rem; color: var(--muted); }
+.error { font-size: 0.83rem; font-weight: 700; color: var(--danger-text); }
+.alert, .warn, .success { margin: 0 0 16px; padding: 12px 14px; font-size: 0.9rem; font-weight: 700; border-radius: var(--radius); line-height: 1.5; }
+.alert { background: var(--danger-soft); border: 2px solid var(--danger); color: var(--danger-text); }
+.warn { background: var(--warn-soft); border: 2px solid var(--warn); color: var(--warn-text); }
+.success { background: var(--use-soft); border: 2px solid var(--use); color: var(--use); }
+.submit {
+  display: block; width: 100%; margin-top: 4px; padding: 14px; text-align: center; text-decoration: none;
+  border: none; border-radius: var(--radius); background: var(--accent); color: var(--on-accent);
+  font-size: 1.02rem; font-weight: 700; cursor: pointer; position: relative; overflow: hidden; isolation: isolate;
+}
+.submit::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: -1;
+  background: repeating-linear-gradient(-45deg, var(--stripe) 0 6px, #16191d 6px 12px);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.2s ease;
+}
+.submit:hover { background: var(--accent-strong); }
+.submit:hover::after { transform: scaleX(1); }
+.submit:disabled { opacity: 0.6; cursor: wait; }
+@media (max-width: 420px) { .twoCol { grid-template-columns: 1fr; } }

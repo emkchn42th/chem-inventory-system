@@ -281,3 +281,17 @@
 .actionButton { color: var(--text-2); border-color: var(--border-strong); background: var(--surface); }
 .actionButton:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
 .searchBar { border: 2px solid var(--ink); }
+
+/* ===== 로그인 기능 단계 ===== */
+.userBox { display: flex; align-items: center; gap: 6px; margin: 0; }
+.userName {
+  max-width: 160px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font-size: 0.88rem; font-weight: 700; color: var(--text-2);
+}
+.logoutButton { padding: 8px 12px; font-size: 0.85rem; }
+.loginButton { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.loginButton:hover { background: var(--accent-strong); border-color: var(--accent-strong); color: var(--on-accent); }
+@media (max-width: 640px) {
+  .userName { max-width: 90px; font-size: 0.8rem; }
+  .logoutButton { padding: 7px 9px; font-size: 0.8rem; }
+}

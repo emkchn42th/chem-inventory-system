@@ -4,6 +4,7 @@
 import { loadInventory } from "../../../lib/data";
 import { getExpiryInfo } from "../../../lib/expiry";
 import { toCsv, todayKST } from "../../../lib/format";
+import { describeAmount } from "../../../lib/amount";
 
 export const dynamic = "force-dynamic";
 
@@ -12,12 +13,12 @@ export async function GET() {
   const today = new Date();
 
   const rows = [
-    ["재고번호", "시약명", "구매일", "개봉일", "유효기한", "유효기한 상태", "남은양", "보관위치", "현재상태", "비고"],
+    ["재고번호", "시약명", "구매일", "개봉일", "유효기한", "유효기한 상태", "남은 양", "남은 양 기록 방식", "보관위치", "현재상태", "비고"],
     ...inventory.map((row) => {
       const { state, days } = getExpiryInfo(row, today);
       const label =
         state === "expired" ? `만료 (${-days}일 지남)` : state === "soon" ? `임박 (D-${days})` : state === "ok" ? "정상" : "";
-      return [row.재고번호, row.시약명, row.구매일, row.개봉일 || "미개봉", row.유효기한, label, row.남은양, row.보관위치, row.현재상태, row.비고];
+      return [row.재고번호, row.시약명, row.구매일, row.개봉일 || "미개봉", row.유효기한, label, describeAmount(row).text, row.잔량방식 || "정성", row.보관위치, row.현재상태, row.비고];
     }),
   ];
 

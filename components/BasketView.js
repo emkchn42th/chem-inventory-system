@@ -13,6 +13,7 @@ import { useStore } from "../lib/store";
 import { rentStocks } from "../app/rental/actions";
 import { useToast } from "./Toast";
 import { findDangerousPairs } from "../lib/hazard";
+import { describeAmount } from "../lib/amount";
 
 export default function BasketView() {
   const router = useRouter();
@@ -20,8 +21,7 @@ export default function BasketView() {
   const {
     ready,
     basketRows,
-    borrower,
-    setBorrower,
+    user,
     addToBasket,
     removeFromBasket,
     removeManyFromBasket,
@@ -52,16 +52,14 @@ export default function BasketView() {
   function handleRent() {
     setError("");
     startTransition(async () => {
-      const result = await rentStocks(
-        available.map((row) => row.재고번호),
-        borrower
-      );
+      const result = await rentStocks(available.map((row) => row.재고번호));
       if (result.rented.length > 0) {
         removeManyFromBasket(result.rented.map((item) => item.id)); // 대여된 것만 바구니에서 뺀다
         setDone(result);
         toast.show(`${result.rented.length}개 대여를 기록했어요.`, { tone: "success" });
       } else {
         setError(result.message || "대여하지 못했어요.");
+        if (result.needLogin) router.push("/login?next=/basket");
         if (result.skipped.length > 0) setDone(null);
       }
       router.refresh(); // 서버에서 최신 재고 상태를 다시 읽는다
@@ -181,7 +179,7 @@ export default function BasketView() {
                 </Link>
                 <p className={styles.meta}>
                   <span>재고 #{row.재고번호}</span>
-                  <span>남은 양 {row.남은양}</span>
+                  <span>남은 양 {describeAmount(row).text}</span>
                   {state === "soon" && <span className={styles.soon}>유효기한 D-{days}</span>}
                   {state === "expired" && <span className={styles.warn}>유효기한 만료 · 대여 불가</span>}
                   {inUse && <span className={styles.warn}>누군가 사용중 · 대여 불가</span>}
@@ -212,20 +210,21 @@ export default function BasketView() {
         </div>
       )}
 
-      <div className={styles.borrowerBox}>
-        <label htmlFor="borrower" className={styles.borrowerLabel}>
-          대여자 <span className={styles.optional}>(선택 · 학번/이름)</span>
-        </label>
-        <input
-          id="borrower"
-          type="text"
-          value={borrower}
-          maxLength={20}
-          placeholder="예) 2107 엄기찬"
-          onChange={(event) => setBorrower(event.target.value)}
-          className={styles.borrowerInput}
-        />
-      </div>
+      {/* 대여자는 로그인한 계정으로 자동 기록된다 */}
+      {user ? (
+        <p className={styles.borrowerLine}>
+          대여자 <b>{user.label}</b> <span className={styles.optional}>(로그인한 계정으로 기록돼요)</span>
+        </p>
+      ) : (
+        <div className={styles.loginBox}>
+          <p>
+            <b>대여하려면 로그인이 필요해요.</b> 로그인하면 내가 빌린 재고를 나만 반납할 수 있어요.
+          </p>
+          <Link href="/login?next=/basket" className={styles.loginLink}>
+            로그인 / 회원가입
+          </Link>
+        </div>
+      )}
 
       <div className={styles.bar}>
         <span className={styles.barText}>대여 가능 {available.length}개</span>
@@ -237,7 +236,7 @@ export default function BasketView() {
             type="button"
             className={styles.primary}
             onClick={handleRent}
-            disabled={pending || available.length === 0}
+            disabled={pending || available.length === 0 || !user}
           >
             {pending ? "처리 중..." : `대여하기 (${available.length})`}
           </button>

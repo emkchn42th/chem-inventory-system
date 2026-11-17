@@ -11,6 +11,8 @@ import { loadReagents, loadInventory } from "../../../lib/data";
 import { isSupabaseConfigured } from "../../../lib/supabase";
 import { todayText } from "../../../lib/stock-form";
 import { addStock } from "./actions";
+import { getUser } from "../../../lib/auth";
+import LoginRequired from "../../../components/LoginRequired";
 
 export const dynamic = "force-dynamic";
 
@@ -40,17 +42,22 @@ export default async function NewStockPage({ searchParams }) {
         <h1 className={styles.title}>재고 추가하기</h1>
         <p className={styles.sub}>새로 들어온 시약병의 정보를 입력하세요. * 는 꼭 입력해야 해요.</p>
 
-        <div className={styles.card}>
-          <StockForm
-            action={addStock}
-            cancelHref={defaultReagent ? `/reagents/${encodeURIComponent(defaultReagent)}` : "/reagents"}
-            reagentNames={reagentNames}
-            defaultReagent={defaultReagent}
-            locations={locations}
-            today={todayText()}
-            dbReady={isSupabaseConfigured()}
-          />
-        </div>
+        {/* 로그인한 사람만 재고를 추가할 수 있다 */}
+        {getUser() ? (
+          <div className={styles.card}>
+            <StockForm
+              action={addStock}
+              cancelHref={defaultReagent ? `/reagents/${encodeURIComponent(defaultReagent)}` : "/reagents"}
+              reagentNames={reagentNames}
+              defaultReagent={defaultReagent}
+              locations={locations}
+              today={todayText()}
+              dbReady={isSupabaseConfigured()}
+            />
+          </div>
+        ) : (
+          <LoginRequired next={wanted ? `/stock/new?reagent=${encodeURIComponent(wanted)}` : "/stock/new"} what="재고 추가" />
+        )}
       </main>
     </div>
   );

@@ -13,6 +13,7 @@ import styles from "./page.module.css";
 import SiteHeader from "../../../components/SiteHeader";
 import StockActions from "../../../components/StockActions";
 import { LiveBadges } from "../../../components/LiveStatus";
+import AmountDisplay from "../../../components/AmountDisplay";
 import {
   loadReagents,
   loadInventory,
@@ -23,7 +24,7 @@ import { buildMsdsView } from "../../../lib/msds";
 
 export const dynamic = "force-dynamic";
 
-const AMOUNT_LEVEL = { 상: 3, 중: 2, 하: 1 };
+
 
 export default async function StockDetailPage({ params, searchParams }) {
   const inventory = await loadInventory();
@@ -48,7 +49,6 @@ export default async function StockDetailPage({ params, searchParams }) {
   const reagent = findReagent(await loadReagents(), row.시약명);
   const msds = reagent ? buildMsdsView(reagent) : null;
   const { state, days } = getExpiryInfo(row, new Date());
-  const level = AMOUNT_LEVEL[row.남은양] ?? 0;
   const signalClass = msds?.signal === "위험" ? styles.signalDanger : styles.signalWarning;
 
   return (
@@ -106,12 +106,7 @@ export default async function StockDetailPage({ params, searchParams }) {
                 <div>
                   <dt>남은 양</dt>
                   <dd className={styles.amount}>
-                    <span className={styles.bars} aria-hidden="true">
-                      {[1, 2, 3].map((n) => (
-                        <span key={n} className={`${styles.bar} ${n <= level ? styles.barOn : ""}`} />
-                      ))}
-                    </span>
-                    {row.남은양}
+                    <AmountDisplay row={row} large />
                   </dd>
                 </div>
                 <div>

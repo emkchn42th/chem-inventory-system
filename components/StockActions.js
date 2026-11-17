@@ -14,7 +14,7 @@ import { useStore } from "../lib/store";
 import { useToast } from "./Toast";
 
 export default function StockActions({ id, expired, place }) {
-  const { ready, statusOf, basket, addToBasket, removeFromBasket } = useStore();
+  const { ready, statusOf, basket, addToBasket, removeFromBasket, inUseRows } = useStore();
   const toast = useToast();
   const router = useRouter();
 
@@ -40,10 +40,22 @@ export default function StockActions({ id, expired, place }) {
   const inBasket = basket.includes(id);
 
   if (status === "사용중") {
+    // 누가 빌렸는지에 따라 안내가 달라진다 (내 것만 반납 가능)
+    const use = inUseRows.find((row) => row.재고번호 === id);
+    if (use && !use.canReturn) {
+      return (
+        <div className={`${styles.box} ${styles.useBox}`}>
+          <p className={styles.msg}>
+            <strong>{use.borrower ? `${use.borrower} 님이 사용중이에요.` : "다른 사람이 사용중이에요."}</strong>{" "}
+            반납되면 바구니에 담을 수 있어요.
+          </p>
+        </div>
+      );
+    }
     return (
       <div className={`${styles.box} ${styles.useBox}`}>
         <p className={styles.msg}>
-          <strong>현재 사용중인 재고입니다.</strong> 다 쓴 뒤 <b>{place}</b> 에 돌려놓고 반납 처리하세요.
+          <strong>{use?.mine ? "내가 빌린 재고예요." : "현재 사용중인 재고입니다."}</strong> 다 쓴 뒤 <b>{place}</b> 에 돌려놓고 반납 처리하세요.
         </p>
         <Link href="/return" className={styles.primary}>
           ↩ 반납하러 가기

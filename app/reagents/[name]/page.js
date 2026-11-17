@@ -17,6 +17,7 @@ import SiteHeader from "../../../components/SiteHeader";
 import { LiveBadges } from "../../../components/LiveStatus";
 import { TrackRecent } from "../../../components/RecentReagents";
 import PrintButton from "../../../components/PrintButton";
+import AmountDisplay from "../../../components/AmountDisplay";
 import { CATEGORIES } from "../../../lib/categories";
 import {
   loadReagents,
@@ -44,8 +45,7 @@ function decodeName(value) {
   }
 }
 
-// 남은 양 "상/중/하" 를 막대로 보여주기 위한 표
-const AMOUNT_LEVEL = { 상: 3, 중: 2, 하: 1 };
+// 남은 양 표시는 components/AmountDisplay.js 가 맡는다 (정량/정성)
 
 export default async function ReagentDetailPage({ params }) {
   const name = decodeName(params.name);
@@ -187,7 +187,6 @@ export default async function ReagentDetailPage({ params }) {
             <div className={styles.stockGrid}>
               {stockRows.map((row) => {
                 const { state, days } = row.expiry;
-                const level = AMOUNT_LEVEL[row.남은양] ?? 0;
 
                 return (
                   <Link
@@ -231,15 +230,7 @@ export default async function ReagentDetailPage({ params }) {
                       <div>
                         <dt>남은 양</dt>
                         <dd className={styles.amount}>
-                          <span className={styles.bars} aria-hidden="true">
-                            {[1, 2, 3].map((n) => (
-                              <span
-                                key={n}
-                                className={`${styles.bar} ${n <= level ? styles.barOn : ""}`}
-                              />
-                            ))}
-                          </span>
-                          {row.남은양}
+                          <AmountDisplay row={row} />
                         </dd>
                       </div>
                     </dl>

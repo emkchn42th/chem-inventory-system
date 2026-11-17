@@ -5,6 +5,7 @@ import "./globals.css";
 import { StoreProvider } from "../lib/store";
 import { loadInventory, loadRentals, loadReagents } from "../lib/data";
 import { buildReagentIndex } from "../lib/reagent-index";
+import { getUser } from "../lib/auth";
 import { ToastProvider } from "../components/Toast";
 import MobileNav from "../components/MobileNav";
 import { themeScript } from "../components/ThemeToggle";
@@ -33,6 +34,8 @@ export default async function RootLayout({ children }) {
     loadReagents(),
   ]);
   const reagentIndex = buildReagentIndex(reagents);
+  // 로그인한 사람 (반납 버튼·헤더 이름 표시에 씀). 로그인하지 않았으면 null
+  const user = getUser();
 
   return (
     // data-theme 은 아래 스크립트가 정하므로 서버와 달라도 경고하지 않게 한다
@@ -49,7 +52,7 @@ export default async function RootLayout({ children }) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
-        <StoreProvider inventory={inventory} rentals={rentals} reagents={reagentIndex}>
+        <StoreProvider inventory={inventory} rentals={rentals} reagents={reagentIndex} user={user}>
           <ToastProvider>
             {children}
             <MobileNav />
