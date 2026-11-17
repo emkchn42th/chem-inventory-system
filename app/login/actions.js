@@ -50,7 +50,7 @@ export async function register(prevState, formData) {
   if (!isSupabaseConfigured()) return { message: NO_DB, values };
 
   const errors = {};
-  if (!/^\d{4,5}$/.test(values.studentId)) errors.studentId = "학번은 숫자 4~5자리로 입력하세요. (예: 2107)";
+  if (!/^\d{4,5}$/.test(values.studentId)) errors.studentId = "학번은 숫자 4~5자리로 입력하세요. (예: 2617)";
   if (!/^[가-힣a-zA-Z ]{2,20}$/.test(values.name)) errors.name = "이름을 2~20자로 입력하세요.";
   if (!EMAIL_RE.test(values.email)) errors.email = "이메일을 정확히 입력하세요.";
   if (password.length < 8) errors.password = "비밀번호는 8자 이상이어야 해요.";

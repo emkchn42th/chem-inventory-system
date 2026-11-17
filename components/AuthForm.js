@@ -76,8 +76,8 @@ export default function AuthForm({ mode, next, dbReady }) {
           <input type="hidden" name="next" value={next} />
           {isSignup && (
             <div className={styles.twoCol}>
-              <Field label="학번" name="studentId" error={errors.studentId} defaultValue={v.studentId} placeholder="2107" autoComplete="off" />
-              <Field label="이름" name="name" error={errors.name} defaultValue={v.name} placeholder="엄기찬" autoComplete="name" />
+              <Field label="학번" name="studentId" error={errors.studentId} defaultValue={v.studentId} placeholder="2617" autoComplete="off" />
+              <Field label="이름" name="name" error={errors.name} defaultValue={v.name} placeholder="홍길동" autoComplete="name" />
             </div>
           )}
           <Field label="이메일" name="email" type="email" error={errors.email} defaultValue={v.email} autoComplete="email" placeholder="example@school.kr" />
