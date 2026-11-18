@@ -45,7 +45,9 @@ export default function DeleteStock({ id, name, inUse }) {
   return (
     <div className={styles.box}>
       <p className={styles.title}>재고 삭제</p>
-      <p className={styles.text}>다 쓰거나 폐기한 시약병이라면 장부에서 지울 수 있어요. 대여 기록도 함께 지워져요.</p>
+      <p className={styles.text}>
+        잘못 입력한 재고를 지울 때만 쓰세요. 대여 기록까지 함께 지워져요. 다 쓰거나 버린 시약병은 위의 &quot;폐기 처리&quot;를 쓰세요.
+      </p>
       {error && <p className={styles.error}>{error}</p>}
       {!asking ? (
         <button type="button" className={styles.danger} onClick={() => setAsking(true)}>

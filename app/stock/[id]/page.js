@@ -14,9 +14,12 @@ import SiteHeader from "../../../components/SiteHeader";
 import StockActions from "../../../components/StockActions";
 import { LiveBadges } from "../../../components/LiveStatus";
 import AmountDisplay from "../../../components/AmountDisplay";
+import PpeBadges from "../../../components/PpeBadges";
+import { ppeFromMsds } from "../../../lib/ppe";
+import { getUserWithRole } from "../../../lib/auth";
 import {
   loadReagents,
-  loadInventory,
+  loadInventoryAll,
   findReagent,
   getExpiryInfo,
 } from "../../../lib/data";
@@ -27,7 +30,8 @@ export const dynamic = "force-dynamic";
 
 
 export default async function StockDetailPage({ params, searchParams }) {
-  const inventory = await loadInventory();
+  // 폐기한 재고도 찾을 수 있게 전부 읽는다 (장부의 링크로 들어올 수 있으므로)
+  const [inventory, user] = await Promise.all([loadInventoryAll(), getUserWithRole()]);
   const row = inventory.find((item) => item.재고번호 === params.id);
 
   if (!row) {
@@ -49,6 +53,7 @@ export default async function StockDetailPage({ params, searchParams }) {
   const reagent = findReagent(await loadReagents(), row.시약명);
   const msds = reagent ? buildMsdsView(reagent) : null;
   const { state, days } = getExpiryInfo(row, new Date());
+  const disposed = row.현재상태 === "폐기";
   const signalClass = msds?.signal === "위험" ? styles.signalDanger : styles.signalWarning;
 
   return (
@@ -76,9 +81,19 @@ export default async function StockDetailPage({ params, searchParams }) {
             {state === "soon" && <span className={styles.badgeSoon}>임박 D-{days}</span>}
             <LiveBadges id={row.재고번호} styles={styles} />
           </div>
-          <Link href={`/stock/${row.재고번호}/edit`} className={`${styles.editLink} noPrint`}>
-            ✏️ 수정·삭제
-          </Link>
+          {!disposed && (
+            <div className={`${styles.topActions} noPrint`}>
+              <Link href={`/labels?ids=${row.재고번호}`} className={styles.editLink}>
+                🏷 라벨 인쇄
+              </Link>
+              {/* 수정·삭제·폐기는 관리자(선생님)만 */}
+              {user?.isAdmin && (
+                <Link href={`/stock/${row.재고번호}/edit`} className={styles.editLink}>
+                  ✏️ 수정·삭제·폐기
+                </Link>
+              )}
+            </div>
+          )}
         </section>
 
         <div className={styles.layout}>
@@ -117,8 +132,37 @@ export default async function StockDetailPage({ params, searchParams }) {
               {row.비고 && <p className={styles.note}>📝 {row.비고}</p>}
             </section>
 
-            {/* ===== 3. 바구니 ===== */}
-            <StockActions id={row.재고번호} expired={state === "expired"} place={row.보관위치} />
+            {/* ===== 3. 바구니 (폐기한 재고는 대신 폐기 기록을 보여 준다) ===== */}
+            {disposed ? (
+              <div className={styles.disposedBox}>
+                <p className={styles.disposedTitle}>🗑 폐기한 재고예요</p>
+                <dl className={styles.disposedInfo}>
+                  <div>
+                    <dt>폐기일</dt>
+                    <dd>{row.폐기일 || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>처리 방법</dt>
+                    <dd>{row.폐기방법 || "-"}</dd>
+                  </div>
+                  <div>
+                    <dt>처리한 사람</dt>
+                    <dd>{row.처리자 || "-"}</dd>
+                  </div>
+                  {row.폐기메모 && (
+                    <div>
+                      <dt>메모</dt>
+                      <dd>{row.폐기메모}</dd>
+                    </div>
+                  )}
+                </dl>
+                <Link href="/disposal" className={styles.moreLink}>
+                  폐기 기록 전체 보기 ›
+                </Link>
+              </div>
+            ) : (
+              <StockActions id={row.재고번호} expired={state === "expired"} place={row.보관위치} />
+            )}
           </div>
 
           {/* ===== 4. 안전관리 ===== */}
@@ -128,6 +172,10 @@ export default async function StockDetailPage({ params, searchParams }) {
                 <div className={styles.cardHead}>
                   <h2 className={styles.cardTitle}>안전관리</h2>
                   {msds.signal && <span className={`${styles.signal} ${signalClass}`}>{msds.signal}</span>}
+                </div>
+
+                <div className={styles.ppe}>
+                  <PpeBadges items={ppeFromMsds(msds)} />
                 </div>
 
                 {msds.pictograms.length > 0 && (

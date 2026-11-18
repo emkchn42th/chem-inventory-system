@@ -29,6 +29,7 @@ import {
   getOrderNeed,
 } from "../../lib/data";
 import { loadReagentIndex } from "../../lib/reagent-index";
+import { getUserWithRole } from "../../lib/auth";
 
 const SORTS = [
   { key: "name", label: "이름순" },
@@ -76,10 +77,11 @@ export default async function ReagentsPage({ searchParams }) {
   };
 
   // 2) 데이터 읽기
-  const [reagents, inventory, reagentIndex] = await Promise.all([
+  const [reagents, inventory, reagentIndex, user] = await Promise.all([
     loadReagents(),
     loadInventory(),
     loadReagentIndex(), // 미리보기용 요약 (서버에 보관해 둔 것을 씀)
+    getUserWithRole(),
   ]);
   const summaryOf = new Map(reagentIndex.map((item) => [item.name, item]));
 
@@ -133,9 +135,12 @@ export default async function ReagentsPage({ searchParams }) {
         <div className={styles.resultHead}>
           <h1 className={styles.resultTitle}>{title}</h1>
           <span className={styles.resultCount}>{results.length}종</span>
-          <Link href="/stock/new" className={styles.addButton}>
-            + 재고 추가
-          </Link>
+          {/* 재고 추가는 관리자(선생님)만 */}
+          {user?.isAdmin && (
+            <Link href="/stock/new" className={styles.addButton}>
+              + 재고 추가
+            </Link>
+          )}
         </div>
 
         {/* ===== 필터·정렬 ===== */}

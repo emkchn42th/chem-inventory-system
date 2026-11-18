@@ -191,3 +191,13 @@
 
 /* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
 .place { background: var(--accent-soft); color: var(--accent-strong); border: 1px solid var(--accent-border); }
+
+/* 재고 목록 머리 버튼 (라벨 인쇄 / 재고 추가) */
+.headActions { margin-left: auto; display: flex; gap: 8px; }
+.headActions .addButton { margin-left: 0; }
+.labelButton {
+  padding: 8px 14px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--text-2);
+  font-weight: 700; font-size: 0.88rem; text-decoration: none; border-radius: var(--radius);
+}
+.labelButton:hover { border-color: var(--accent); color: var(--accent-strong); }
+.ppeRow { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }

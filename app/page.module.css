@@ -308,3 +308,11 @@
 .orderBadge { background: var(--accent); }
 .orderRow:hover { border-color: var(--accent); }
 .metal { background: var(--tag-metal-bg); }
+
+/* ===== 반납이 늦은 재고 ===== */
+.overdueRow {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 14px 16px;
+  border: 2px solid var(--danger); background: var(--surface); color: inherit; text-decoration: none; border-radius: var(--radius);
+}
+.overdueRow:hover { background: var(--danger-soft); }
+.overdueBadge { background: var(--danger); color: var(--on-accent); font-size: 0.75rem; font-weight: 800; padding: 4px 9px; border-radius: var(--radius); }

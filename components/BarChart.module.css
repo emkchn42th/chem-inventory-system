@@ -1,0 +1,42 @@
+.figure { margin: 0; }
+
+/* 마우스를 올리면 뜨는 값 상자 */
+.vCol, .hRow { position: relative; outline: none; }
+.vCol:hover::after, .vCol:focus-visible::after, .hRow:hover::after, .hRow:focus-visible::after {
+  content: attr(data-tip); position: absolute; z-index: 5; white-space: nowrap; pointer-events: none;
+  padding: 5px 9px; font-size: 0.8rem; font-weight: 700; color: var(--bg); background: var(--text);
+  border-radius: var(--radius); box-shadow: var(--shadow-pop);
+}
+.vCol:hover::after, .vCol:focus-visible::after { bottom: calc(100% - 18px); left: 50%; transform: translateX(-50%); }
+.hRow:hover::after, .hRow:focus-visible::after { top: -30px; left: 120px; }
+
+/* 세로 막대 */
+.vertical {
+  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px;
+  height: 200px; padding-top: 22px; border-bottom: 1px solid var(--border-strong);
+  background-image: linear-gradient(var(--line) 1px, transparent 1px); background-size: 100% 25%;
+}
+.vCol { display: flex; flex-direction: column; min-width: 0; }
+.vTrack { position: relative; flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
+.vBar { width: min(36px, 70%); min-height: 2px; background: var(--accent); border-radius: 2px 2px 0 0; }
+.vCol:hover .vBar, .vCol:focus-visible .vBar { background: var(--accent-strong); }
+.zero { background: var(--border); }
+.vValue { font-family: var(--mono); font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.vLabel { margin-top: 6px; text-align: center; font-size: 0.76rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* 가로 막대 */
+.horizontal { display: flex; flex-direction: column; gap: 6px; }
+.hRow { display: grid; grid-template-columns: 110px 1fr 52px; align-items: center; gap: 10px; }
+.hLabel { font-size: 0.86rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hTrack { height: 14px; background: var(--surface-2); }
+.hBar { height: 100%; background: var(--accent); border-radius: 0 2px 2px 0; }
+.hRow:hover .hBar, .hRow:focus-visible .hBar { background: var(--accent-strong); }
+.hValue { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: var(--text-2); text-align: right; }
+
+/* 표로 보기 */
+.table { margin-top: 10px; font-size: 0.82rem; }
+.table summary { cursor: pointer; color: var(--muted); font-weight: 700; }
+.table table { margin-top: 6px; border-collapse: collapse; }
+.table th, .table td { padding: 3px 12px 3px 0; text-align: left; font-weight: 500; }
+.table td { font-family: var(--mono); }
+@media print { .table { display: none; } }

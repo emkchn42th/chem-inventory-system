@@ -37,6 +37,7 @@ export default function HeaderActions() {
         <form action={logout} className={styles.userBox}>
           <span className={styles.userName} title={user.email}>
             👤 {user.label}
+            {user.isAdmin && <span className={styles.adminTag}>관리자</span>}
           </span>
           <button type="submit" className={`${styles.actionButton} ${styles.logoutButton}`}>
             로그아웃

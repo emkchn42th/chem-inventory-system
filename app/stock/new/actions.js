@@ -7,9 +7,10 @@ import { redirect } from "next/navigation";
 import { loadReagents, loadInventory, refreshInventoryCache } from "../../../lib/data";
 import { isSupabaseConfigured, insertRow } from "../../../lib/supabase";
 import { validateStockForm } from "../../../lib/stock-form";
-import { getAccessToken } from "../../../lib/auth";
+import { getAccessToken, getUserWithRole } from "../../../lib/auth";
 
 const NEED_LOGIN = { errors: {}, message: "로그인이 필요해요. 로그인한 뒤 다시 저장해 주세요." };
+const NEED_ADMIN = { errors: {}, message: "관리자(선생님)만 할 수 있어요." };
 
 
 // useFormState 로 부르면 (이전 결과, 폼 값) 두 개를 받는다.
@@ -28,6 +29,7 @@ export async function addStock(prevState, formData) {
   // 재고 추가는 로그인한 사람만 (DB 규칙에서도 한 번 더 막는다)
   const token = getAccessToken();
   if (!token) return { ...NEED_LOGIN, values: raw };
+  if (!(await getUserWithRole())?.isAdmin) return { ...NEED_ADMIN, values: raw }; // DB 규칙에서도 한 번 더 막는다
 
   const [reagents, inventory] = await Promise.all([loadReagents(), loadInventory()]);
 
@@ -67,7 +69,7 @@ export async function addStock(prevState, formData) {
     return {
       errors: {},
       values: v,
-      message: "저장하지 못했어요. Supabase 권한(policies_auth.sql) 설정을 확인하세요.",
+      message: "저장하지 못했어요. Supabase 권한(policies_admin.sql) 설정을 확인하세요.",
     };
   }
 

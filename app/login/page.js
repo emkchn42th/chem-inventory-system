@@ -22,7 +22,8 @@ export default function LoginPage({ searchParams }) {
   // 이미 로그인했으면 돌아갈 화면으로 보낸다
   if (getUser()) redirect(next.startsWith("/") && !next.startsWith("//") ? next : "/");
 
-  const mode = read(searchParams.mode) === "signup" ? "signup" : "login";
+  const wanted = read(searchParams.mode);
+  const mode = wanted === "signup" || wanted === "forgot" ? wanted : "login";
 
   return (
     <div className={styles.page}>

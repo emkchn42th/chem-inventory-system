@@ -11,7 +11,7 @@ import { loadReagents, loadInventory } from "../../../lib/data";
 import { isSupabaseConfigured } from "../../../lib/supabase";
 import { todayText } from "../../../lib/stock-form";
 import { addStock } from "./actions";
-import { getUser } from "../../../lib/auth";
+import { getUserWithRole } from "../../../lib/auth";
 import LoginRequired from "../../../components/LoginRequired";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +19,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "재고 추가 · 시약관리대장" };
 
 export default async function NewStockPage({ searchParams }) {
+  const user = await getUserWithRole();
   const reagents = await loadReagents();
   const inventory = await loadInventory();
 
@@ -42,8 +43,8 @@ export default async function NewStockPage({ searchParams }) {
         <h1 className={styles.title}>재고 추가하기</h1>
         <p className={styles.sub}>새로 들어온 시약병의 정보를 입력하세요. * 는 꼭 입력해야 해요.</p>
 
-        {/* 로그인한 사람만 재고를 추가할 수 있다 */}
-        {getUser() ? (
+        {/* 관리자(선생님)만 재고를 추가할 수 있다 */}
+        {user?.isAdmin ? (
           <div className={styles.card}>
             <StockForm
               action={addStock}
@@ -56,7 +57,11 @@ export default async function NewStockPage({ searchParams }) {
             />
           </div>
         ) : (
-          <LoginRequired next={wanted ? `/stock/new?reagent=${encodeURIComponent(wanted)}` : "/stock/new"} what="재고 추가" />
+          <LoginRequired
+            next={wanted ? `/stock/new?reagent=${encodeURIComponent(wanted)}` : "/stock/new"}
+            what="재고 추가"
+            adminOnly={Boolean(user)}
+          />
         )}
       </main>
     </div>

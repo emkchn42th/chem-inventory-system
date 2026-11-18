@@ -30,3 +30,8 @@
 .submit:hover::after { transform: scaleX(1); }
 .submit:disabled { opacity: 0.6; cursor: wait; }
 @media (max-width: 420px) { .twoCol { grid-template-columns: 1fr; } }
+
+/* 비밀번호 찾기 */
+.forgot { align-self: center; font-size: 0.86rem; font-weight: 700; color: var(--accent-strong); text-decoration: none; }
+.forgot:hover { text-decoration: underline; }
+.lead { margin: 0 0 14px; font-size: 0.9rem; color: var(--text-2); line-height: 1.5; }

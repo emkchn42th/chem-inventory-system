@@ -5,7 +5,7 @@ import "./globals.css";
 import { StoreProvider } from "../lib/store";
 import { loadInventory, loadRentals } from "../lib/data";
 import { loadReagentIndex } from "../lib/reagent-index";
-import { getUser } from "../lib/auth";
+import { getUserWithRole } from "../lib/auth";
 import { ToastProvider } from "../components/Toast";
 import MobileNav from "../components/MobileNav";
 import HoverPrefetch from "../components/HoverPrefetch";
@@ -35,7 +35,8 @@ export default async function RootLayout({ children }) {
     loadReagentIndex(),
   ]);
   // 로그인한 사람 (반납 버튼·헤더 이름 표시에 씀). 로그인하지 않았으면 null
-  const user = getUser();
+  // isAdmin: 관리자(선생님)인지 — 관리자 메뉴·대신 반납 버튼 표시에 씀
+  const user = await getUserWithRole();
 
   return (
     // data-theme 은 아래 스크립트가 정하므로 서버와 달라도 경고하지 않게 한다

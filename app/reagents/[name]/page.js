@@ -18,6 +18,9 @@ import { LiveBadges } from "../../../components/LiveStatus";
 import { TrackRecent } from "../../../components/RecentReagents";
 import PrintButton from "../../../components/PrintButton";
 import AmountDisplay from "../../../components/AmountDisplay";
+import { getUserWithRole } from "../../../lib/auth";
+import PpeBadges from "../../../components/PpeBadges";
+import { ppeFromMsds } from "../../../lib/ppe";
 import { CATEGORIES } from "../../../lib/categories";
 import {
   loadReagents,
@@ -50,8 +53,7 @@ function decodeName(value) {
 export default async function ReagentDetailPage({ params }) {
   const name = decodeName(params.name);
 
-  const reagents = await loadReagents();
-  const inventory = await loadInventory();
+  const [reagents, inventory, user] = await Promise.all([loadReagents(), loadInventory(), getUserWithRole()]);
   const reagent = findReagent(reagents, name);
 
   // 없는 시약 주소로 들어온 경우
@@ -163,6 +165,11 @@ export default async function ReagentDetailPage({ params }) {
               ))}
             </ul>
           )}
+
+          {/* 필요한 보호구·주의 (MSDS 를 바탕으로 자동 정리) */}
+          <div className={styles.ppeRow}>
+            <PpeBadges items={ppeFromMsds(msds)} detail />
+          </div>
         </section>
 
         {/* ===== 3. 재고 목록 ===== */}
@@ -173,12 +180,25 @@ export default async function ReagentDetailPage({ params }) {
             {expiredCount > 0 && (
               <span className={styles.expiredNote}>만료 {expiredCount}개</span>
             )}
-            <Link
-              href={`/stock/new?reagent=${encodeURIComponent(reagent.시약명)}`}
-              className={styles.addButton}
-            >
-              + 재고 추가
-            </Link>
+            <div className={`${styles.headActions} noPrint`}>
+              {stockRows.length > 0 && (
+                <Link
+                  href={`/labels?reagent=${encodeURIComponent(reagent.시약명)}`}
+                  className={styles.labelButton}
+                >
+                  🏷 라벨 인쇄
+                </Link>
+              )}
+              {/* 재고 추가는 관리자(선생님)만 */}
+              {user?.isAdmin && (
+                <Link
+                  href={`/stock/new?reagent=${encodeURIComponent(reagent.시약명)}`}
+                  className={styles.addButton}
+                >
+                  + 재고 추가
+                </Link>
+              )}
+            </div>
           </div>
 
           {stockRows.length === 0 ? (

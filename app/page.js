@@ -26,7 +26,9 @@ import {
   isExpired,
   getExpiryInfo,
   getOrderNeed,
+  loadRentals,
 } from "../lib/data";
+import { overdueDays } from "../lib/overdue";
 import { UseCount } from "../components/LiveStatus";
 import { RecentReagents } from "../components/RecentReagents";
 
@@ -39,8 +41,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // 1차시에 만든 데이터 파일을 읽어온다.
-  const reagents = await loadReagents();
-  const inventory = await loadInventory();
+  const [reagents, inventory, rentals] = await Promise.all([loadReagents(), loadInventory(), loadRentals()]);
 
   const summary = buildSummary(reagents, inventory);
   const categoryCounts = countByCategory(reagents);
@@ -52,6 +53,13 @@ export default async function Home() {
     .map((row) => ({ ...row, expiry: getExpiryInfo(row, today) }))
     .filter((row) => row.expiry.days !== null && row.expiry.days >= 0 && row.expiry.days <= SOON_DAYS)
     .sort((a, b) => a.expiry.days - b.expiry.days);
+
+  // 반납이 늦은 재고 (빌린 지 하루가 넘었는데 아직 사용중)
+  const byId = new Map(inventory.map((row) => [row.재고번호, row]));
+  const overdueList = rentals
+    .filter((rental) => !rental.반납시각 && overdueDays(rental.대여시각, today) > 0 && byId.has(rental.재고번호))
+    .map((rental) => ({ ...rental, row: byId.get(rental.재고번호), days: overdueDays(rental.대여시각, today) }))
+    .sort((a, b) => b.days - a.days);
 
   // 주문이 필요한 시약
   const orderList = reagents
@@ -158,6 +166,25 @@ export default async function Home() {
             ))}
           </div>
         </section>
+
+        {/* ===== 반납이 늦은 재고 ===== */}
+        {overdueList.length > 0 && (
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>반납이 늦은 재고</h2>
+            <div className={styles.orderList}>
+              {overdueList.map((item) => (
+                <Link key={item.번호} href={`/stock/${item.재고번호}`} className={styles.overdueRow}>
+                  <span className={styles.overdueBadge}>미반납 {item.days}일</span>
+                  <span className={styles.alertName}>
+                    {item.row.시약명} #{item.재고번호}
+                  </span>
+                  <span className={styles.alertPlace}>{item.row.보관위치}</span>
+                  <span className={styles.alertMeta}>{item.대여자 || "대여자 기록 없음"}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ===== 주문이 필요한 시약 ===== */}
         {orderList.length > 0 && (

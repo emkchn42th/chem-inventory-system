@@ -4,11 +4,12 @@
 
 import { redirect } from "next/navigation";
 import { loadReagents, loadInventory, refreshInventoryCache } from "../../../../lib/data";
-import { isSupabaseConfigured, updateRows, deleteRows } from "../../../../lib/supabase";
+import { isSupabaseConfigured, updateRows, deleteRows, callRpc } from "../../../../lib/supabase";
 import { validateStockForm } from "../../../../lib/stock-form";
-import { getAccessToken } from "../../../../lib/auth";
+import { getAccessToken, getUserWithRole } from "../../../../lib/auth";
 
 const NEED_LOGIN = { errors: {}, message: "로그인이 필요해요. 로그인한 뒤 다시 저장해 주세요." };
+const NEED_ADMIN = { errors: {}, message: "관리자(선생님)만 할 수 있어요." };
 
 
 const NO_DB = "DB가 연결되어 있지 않아 저장할 수 없어요. (.env.local 의 Supabase 설정을 확인하세요)";
@@ -21,6 +22,7 @@ export async function updateStock(prevState, formData) {
   if (!/^\d{1,9}$/.test(id)) return { errors: {}, values: raw, message: "잘못된 재고 번호예요." };
   const token = getAccessToken();
   if (!token) return { ...NEED_LOGIN, values: raw };
+  if (!(await getUserWithRole())?.isAdmin) return { ...NEED_ADMIN, values: raw };
 
   const [reagents, inventory] = await Promise.all([loadReagents(), loadInventory()]);
   const current = inventory.find((row) => row.재고번호 === id);
@@ -63,7 +65,7 @@ export async function updateStock(prevState, formData) {
     return {
       errors: {},
       values: v,
-      message: "저장하지 못했어요. Supabase 수정 권한(policies_auth.sql) 설정을 확인하세요.",
+      message: "저장하지 못했어요. Supabase 수정 권한(policies_admin.sql) 설정을 확인하세요.",
     };
   }
 
@@ -78,6 +80,7 @@ export async function deleteStock(idText) {
   if (!/^\d{1,9}$/.test(id)) return { ok: false, message: "잘못된 재고 번호예요." };
   const token = getAccessToken();
   if (!token) return { ok: false, message: NEED_LOGIN.message };
+  if (!(await getUserWithRole())?.isAdmin) return { ok: false, message: NEED_ADMIN.message };
 
   const inventory = await loadInventory();
   const current = inventory.find((row) => row.재고번호 === id);
@@ -93,9 +96,47 @@ export async function deleteStock(idText) {
     console.error(error);
     return {
       ok: false,
-      message: "지우지 못했어요. Supabase 삭제 권한(policies_auth.sql) 설정을 확인하세요.",
+      message: "지우지 못했어요. Supabase 삭제 권한(policies_admin.sql) 설정을 확인하세요.",
     };
   }
   refreshInventoryCache();
   return { ok: true, message: "", name: current.시약명 };
+}
+
+// ---------------------------------------------------------------
+// 폐기 처리 (추가 기능) — 지우지 않고 "폐기" 상태로 기록을 남긴다
+// 돌려주는 값: { ok, message, name }
+// ---------------------------------------------------------------
+const DISPOSAL_METHODS = ["지정폐기물 위탁 처리", "중화 후 배출", "희석 후 배출", "기타"];
+
+export async function disposeStock(idText, methodText, noteText) {
+  const id = String(idText ?? "");
+  const method = String(methodText ?? "").trim();
+  const note = String(noteText ?? "").trim();
+  if (!isSupabaseConfigured()) return { ok: false, message: NO_DB };
+  if (!/^\d{1,9}$/.test(id)) return { ok: false, message: "잘못된 재고 번호예요." };
+  if (!DISPOSAL_METHODS.includes(method)) return { ok: false, message: "처리 방법을 고르세요." };
+  if (note.length > 200) return { ok: false, message: "메모는 200자까지 쓸 수 있어요." };
+
+  const token = getAccessToken();
+  const user = await getUserWithRole();
+  if (!token || !user) return { ok: false, message: NEED_LOGIN.message };
+  if (!user.isAdmin) return { ok: false, message: NEED_ADMIN.message };
+
+  try {
+    const result = await callRpc(
+      "dispose_stock",
+      { p_id: Number(id), p_method: method, p_note: note, p_by: user.label },
+      token
+    );
+    if (result === "forbidden") return { ok: false, message: NEED_ADMIN.message };
+    if (result === "not_available") return { ok: false, message: "보관중인 재고만 폐기할 수 있어요. (사용중이면 먼저 반납)" };
+    if (result !== "ok") return { ok: false, message: "처리하지 못했어요." };
+  } catch (error) {
+    console.error(error);
+    return { ok: false, message: "처리하지 못했어요. Supabase 설정(policies_admin.sql)을 확인하세요." };
+  }
+
+  refreshInventoryCache();
+  return { ok: true, message: "" };
 }

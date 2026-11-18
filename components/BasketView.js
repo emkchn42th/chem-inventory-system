@@ -14,6 +14,8 @@ import { rentStocks } from "../app/rental/actions";
 import { useToast } from "./Toast";
 import { findDangerousPairs } from "../lib/hazard";
 import { describeAmount } from "../lib/amount";
+import PpeBadges from "./PpeBadges";
+import { PPE_ITEMS } from "../lib/ppe";
 
 export default function BasketView() {
   const router = useRouter();
@@ -37,6 +39,11 @@ export default function BasketView() {
   // 대여할 수 있는 재고 (이미 사용중이거나 유효기한이 지난 것은 제외)
   const isBlocked = (row) => row.현재상태 === "사용중" || row.expiry.state === "expired";
   const available = basketRows.filter((row) => !isBlocked(row));
+
+  // 담은 시약 전체에 필요한 보호구 (겹치는 것은 한 번만)
+  const basketPpe = Object.keys(PPE_ITEMS).filter((key) =>
+    basketRows.some((row) => (infoOf(row.시약명)?.ppe ?? []).includes(key))
+  );
 
   // 함께 운반·보관하면 위험한 조합 (참고용 경고, 대여를 막지는 않음)
   const dangers = findDangerousPairs(basketRows.map((row) => infoOf(row.시약명)).filter(Boolean));
@@ -192,6 +199,12 @@ export default function BasketView() {
           );
         })}
       </div>
+
+      {basketPpe.length > 0 && (
+        <div className={styles.ppeBox}>
+          <PpeBadges items={basketPpe} title="이 시약들을 다룰 때 필요한 보호구·주의" />
+        </div>
+      )}
 
       {dangers.length > 0 && (
         <div className={styles.dangerBox} role="alert">

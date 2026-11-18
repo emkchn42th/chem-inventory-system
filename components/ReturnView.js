@@ -172,6 +172,7 @@ export default function ReturnView() {
                     <span>재고 #{row.재고번호}</span>
                     <span>남은 양 {describeAmount(row).text}</span>
                     {row.mine && <span className={styles.mineTag}>내 대여</span>}
+                    {row.overdue > 0 && <span className={styles.overdueTag}>미반납 {row.overdue}일</span>}
                     {row.borrower && <span>대여자 {row.borrower}</span>}
                     <span>{row.rentedAt ? `대여 ${formatDateTime(row.rentedAt)}` : "대여 기록 없음"}</span>
                   </p>
@@ -183,7 +184,7 @@ export default function ReturnView() {
                     onClick={() => handleReturn(row)}
                     disabled={pending}
                   >
-                    {workingId === row.재고번호 ? "처리 중..." : "반납 완료"}
+                    {workingId === row.재고번호 ? "처리 중..." : row.byAdmin ? "관리자 반납" : "반납 완료"}
                   </button>
                 ) : (
                   <span className={styles.ownerNote}>

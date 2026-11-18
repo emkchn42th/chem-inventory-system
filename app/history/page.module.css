@@ -58,3 +58,8 @@
 
 /* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
 .tabActive { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+
+/* ===== 폐기 기록·미반납 ===== */
+.methodSummary { font-size: 0.95rem !important; line-height: 1.4; font-family: var(--font) !important; }
+.memo { white-space: normal !important; max-width: 260px; color: var(--text-2); }
+.overdue { display: inline-block; margin-left: 6px; padding: 3px 8px; border-radius: var(--radius); background: var(--danger); color: var(--on-accent); font-size: 0.76rem; font-weight: 800; }

@@ -17,3 +17,18 @@
 /* ===== 테마 05: 실험실 안전표지 ===== */
 .box { border: 2px solid var(--danger); }
 .title::before { content: "⊘ "; }
+
+/* ===== 폐기 처리 상자 ===== */
+.disposeBox { margin-top: 18px; padding: 18px 20px; border: 2px solid var(--warn); background: var(--warn-soft); border-radius: var(--radius); }
+.disposeTitle { margin: 0 0 4px; font-weight: 800; color: var(--warn-text); }
+.guide { margin: 0 0 12px; padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); font-size: 0.85rem; }
+.guideTitle { margin: 0 0 4px; font-weight: 700; color: var(--text-3); font-size: 0.8rem; }
+.guide ul { margin: 0; padding-left: 18px; line-height: 1.5; color: var(--text-2); }
+.formRow { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; margin-bottom: 12px; }
+@media (max-width: 520px) { .formRow { grid-template-columns: 1fr; } }
+.field { display: flex; flex-direction: column; gap: 4px; font-size: 0.82rem; font-weight: 700; color: var(--text-3); }
+.input { padding: 10px 11px; font-size: 0.95rem; border: 2px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--text); }
+.disposeButton { padding: 11px 18px; border-radius: var(--radius); font-weight: 800; cursor: pointer; background: var(--surface); color: var(--text); border: 2px solid var(--ink); }
+.disposeButton:hover { background: var(--warn); color: var(--on-warn); border-color: var(--warn); }
+.disposeFill { padding: 11px 18px; border-radius: var(--radius); font-weight: 800; cursor: pointer; background: var(--ink); color: var(--bg); border: 2px solid var(--ink); }
+.disposeFill:disabled { opacity: 0.6; cursor: wait; }

@@ -295,3 +295,8 @@
   .userName { max-width: 90px; font-size: 0.8rem; }
   .logoutButton { padding: 7px 9px; font-size: 0.8rem; }
 }
+
+.adminTag {
+  margin-left: 6px; padding: 1px 6px; font-size: 0.72rem; font-weight: 700;
+  background: var(--danger); color: var(--on-accent); border-radius: var(--radius); vertical-align: 1px;
+}

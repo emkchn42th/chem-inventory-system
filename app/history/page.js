@@ -11,7 +11,8 @@ import Link from "next/link";
 import styles from "./page.module.css";
 import SiteHeader from "../../components/SiteHeader";
 import PrintButton from "../../components/PrintButton";
-import { loadInventory, loadRentals } from "../../lib/data";
+import { loadInventoryAll, loadRentals } from "../../lib/data";
+import { overdueDays } from "../../lib/overdue";
 import { isSupabaseConfigured } from "../../lib/supabase";
 import { formatKST } from "../../lib/format";
 import { getUser } from "../../lib/auth";
@@ -34,7 +35,7 @@ export default async function HistoryPage({ searchParams }) {
   const q = read(searchParams.q);
   const status = STATUS.some((item) => item.key === read(searchParams.status)) ? read(searchParams.status) : "";
 
-  const [inventory, rentals] = await Promise.all([loadInventory(), loadRentals()]);
+  const [inventory, rentals] = await Promise.all([loadInventoryAll(), loadRentals()]);
   const user = getUser();
   const tabs = STATUS.filter((item) => item.key !== "mine" || user);
   const byId = new Map(inventory.map((row) => [row.재고번호, row]));
@@ -70,6 +71,12 @@ export default async function HistoryPage({ searchParams }) {
             <a href="/export/rentals" className={styles.tool} download>
               ⬇ 대여 기록 CSV
             </a>
+            <Link href="/stats" className={styles.tool}>
+              📊 사용 통계
+            </Link>
+            <Link href="/disposal" className={styles.tool}>
+              🗑 폐기 기록
+            </Link>
             <PrintButton className={styles.tool} />
           </div>
         </div>
@@ -153,7 +160,12 @@ export default async function HistoryPage({ searchParams }) {
                       {item.반납시각 ? (
                         <span className={styles.time}>{formatKST(item.반납시각)}</span>
                       ) : (
-                        <span className={styles.inUse}>사용중</span>
+                        <>
+                          <span className={styles.inUse}>사용중</span>
+                          {overdueDays(item.대여시각) > 0 && (
+                            <span className={styles.overdue}>미반납 {overdueDays(item.대여시각)}일</span>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>

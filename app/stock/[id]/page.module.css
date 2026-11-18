@@ -88,3 +88,13 @@
 /* ===== 테마 05 밝은 버전: 검정 면을 줄이고 파랑·흰색 위주로 ===== */
 .stockNo { background: var(--accent-soft); color: var(--accent-strong); border: 1px solid var(--accent-border); }
 .place { background: var(--accent); color: var(--on-accent); }
+
+/* ===== 라벨·수정 버튼, 폐기 기록, 보호구 ===== */
+.topActions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+.topActions .editLink { margin-left: 0; }
+.disposedBox { padding: 18px 20px; border: 2px solid var(--border-strong); background: var(--surface-2); border-radius: var(--radius); }
+.disposedTitle { margin: 0 0 10px; font-weight: 700; }
+.disposedInfo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; margin: 0 0 10px; }
+.disposedInfo dt { font-size: 0.78rem; color: var(--muted); }
+.disposedInfo dd { margin: 0; font-weight: 700; }
+.ppe { margin-bottom: 14px; }

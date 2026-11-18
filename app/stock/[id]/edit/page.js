@@ -13,15 +13,18 @@ import { loadReagents, loadInventory } from "../../../../lib/data";
 import { isSupabaseConfigured } from "../../../../lib/supabase";
 import { todayText } from "../../../../lib/stock-form";
 import { updateStock } from "./actions";
-import { getUser } from "../../../../lib/auth";
+import { getUserWithRole } from "../../../../lib/auth";
 import LoginRequired from "../../../../components/LoginRequired";
+import DisposeStock from "../../../../components/DisposeStock";
+import { findReagent, getExpiryInfo } from "../../../../lib/data";
+import { buildMsdsView } from "../../../../lib/msds";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "재고 수정 · 시약관리대장" };
 
 export default async function EditStockPage({ params }) {
-  const [reagents, inventory] = await Promise.all([loadReagents(), loadInventory()]);
+  const [reagents, inventory, user] = await Promise.all([loadReagents(), loadInventory(), getUserWithRole()]);
   const row = inventory.find((item) => item.재고번호 === params.id);
 
   if (!row) {
@@ -53,6 +56,13 @@ export default async function EditStockPage({ params }) {
     location: row.보관위치,
     note: row.비고,
   };
+  // MSDS 의 폐기 문구 (예: P501 폐기물 관련 법령에 따라...)
+  const reagent = findReagent(reagents, row.시약명);
+  const disposalGuide = reagent
+    ? (buildMsdsView(reagent).precautions.find((group) => group.title === "폐기")?.items ?? []).map(
+        (item) => `${item.code} ${item.text}`
+      )
+    : [];
   const locations = [...new Set(inventory.map((item) => item.보관위치))].sort();
 
   return (
@@ -67,8 +77,8 @@ export default async function EditStockPage({ params }) {
         </h1>
         <p className={styles.sub}>바뀐 내용만 고친 뒤 저장하세요. 남은 양이 줄었을 때도 여기서 바꿔요.</p>
 
-        {/* 로그인한 사람만 수정·삭제할 수 있다 */}
-        {getUser() ? (
+        {/* 관리자(선생님)만 수정·삭제·폐기할 수 있다 */}
+        {user?.isAdmin ? (
           <>
             <div className={styles.card}>
               <StockForm
@@ -84,10 +94,18 @@ export default async function EditStockPage({ params }) {
               />
             </div>
 
+            {/* 폐기: 지우지 않고 기록을 남긴다. 아래 "삭제"는 잘못 입력한 재고를 지울 때만 */}
+            <DisposeStock
+              id={row.재고번호}
+              name={row.시약명}
+              inUse={row.현재상태 === "사용중"}
+              expired={getExpiryInfo(row).state === "expired"}
+              guide={disposalGuide}
+            />
             <DeleteStock id={row.재고번호} name={row.시약명} inUse={row.현재상태 === "사용중"} />
           </>
         ) : (
-          <LoginRequired next={`/stock/${row.재고번호}/edit`} what="재고 수정·삭제" />
+          <LoginRequired next={`/stock/${row.재고번호}/edit`} what="재고 수정·삭제·폐기" adminOnly={Boolean(user)} />
         )}
       </main>
     </div>
