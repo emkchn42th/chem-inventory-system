@@ -4,7 +4,7 @@
 //   1) 입력값 검사  2) DB에 저장  3) 저장된 재고 상세 화면으로 이동
 
 import { redirect } from "next/navigation";
-import { loadReagents, loadInventory } from "../../../lib/data";
+import { loadReagents, loadInventory, refreshInventoryCache } from "../../../lib/data";
 import { isSupabaseConfigured, insertRow } from "../../../lib/supabase";
 import { validateStockForm } from "../../../lib/stock-form";
 import { getAccessToken } from "../../../lib/auth";
@@ -70,6 +70,8 @@ export async function addStock(prevState, formData) {
       message: "저장하지 못했어요. Supabase 권한(policies_auth.sql) 설정을 확인하세요.",
     };
   }
+
+  refreshInventoryCache(); // 새 재고가 바로 보이도록
 
   // redirect 는 try 밖에서 불러야 한다 (이동도 내부적으로 예외로 처리되기 때문)
   redirect(`/stock/${saved.id}?added=1`);

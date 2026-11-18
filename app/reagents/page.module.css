@@ -312,19 +312,14 @@
   border: 1px solid var(--border);
   background: var(--surface);
   box-shadow: var(--shadow-pop);
-  opacity: 0;
+  /* 마우스를 올리는 즉시 보이도록 기다림·애니메이션 없이 바로 켜고 끈다 */
   visibility: hidden;
-  transform: translateY(6px);
-  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
   pointer-events: none;
 }
-/* 마우스가 있는 기기에서만, 0.3초 머무르면 보여 준다 */
+/* 마우스가 있는 기기에서만, 올리자마자 보여 준다 */
 @media (hover: hover) {
   .card:hover .preview {
-    opacity: 1;
     visibility: visible;
-    transform: none;
-    transition-delay: 0.3s;
   }
 }
 .previewHead {

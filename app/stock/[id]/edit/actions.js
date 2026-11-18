@@ -3,7 +3,7 @@
 // 재고 수정·삭제 서버 함수 (추가 기능 단계)
 
 import { redirect } from "next/navigation";
-import { loadReagents, loadInventory } from "../../../../lib/data";
+import { loadReagents, loadInventory, refreshInventoryCache } from "../../../../lib/data";
 import { isSupabaseConfigured, updateRows, deleteRows } from "../../../../lib/supabase";
 import { validateStockForm } from "../../../../lib/stock-form";
 import { getAccessToken } from "../../../../lib/auth";
@@ -67,6 +67,7 @@ export async function updateStock(prevState, formData) {
     };
   }
 
+  refreshInventoryCache();
   redirect(`/stock/${id}?edited=1`);
 }
 
@@ -95,5 +96,6 @@ export async function deleteStock(idText) {
       message: "지우지 못했어요. Supabase 삭제 권한(policies_auth.sql) 설정을 확인하세요.",
     };
   }
+  refreshInventoryCache();
   return { ok: true, message: "", name: current.시약명 };
 }

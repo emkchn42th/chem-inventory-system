@@ -10,6 +10,7 @@ const nextConfig = {
     // (대여·반납·수정을 하면 router.refresh() 로 바로 새로 읽으므로 내 변경은 즉시 반영됨)
     staleTimes: {
       dynamic: 30,
+      static: 30, // 미리 받아 둔(prefetch) 화면도 30초까지만 쓴다
     },
 
     outputFileTracingIncludes: {

@@ -10,7 +10,7 @@
 //   - 로그인하지 않으면 대여·반납할 수 없고
 //   - 다른 사람이 빌린 재고는 반납할 수 없다.
 
-import { loadInventory } from "../../lib/data";
+import { loadInventory, refreshInventoryCache } from "../../lib/data";
 import { getExpiryInfo } from "../../lib/expiry";
 import { isSupabaseConfigured, callRpc } from "../../lib/supabase";
 import { getUser, getAccessToken } from "../../lib/auth";
@@ -62,6 +62,7 @@ export async function rentStocks(ids) {
       token
     );
     rentedIds = (Array.isArray(result) ? result : []).map(String);
+    refreshInventoryCache(); // 서버에 보관해 둔 재고 목록을 버리고 새로 읽게 한다
   } catch (error) {
     console.error(error);
     return { ok: false, rented: [], skipped, message: SQL_HINT };
@@ -94,7 +95,10 @@ export async function returnStock(idText) {
 
   try {
     const result = await callRpc("return_stock", { p_id: Number(id) }, token);
-    if (result === "ok") return { ok: true, message: "" };
+    if (result === "ok") {
+      refreshInventoryCache();
+      return { ok: true, message: "" };
+    }
     if (result === "not_yours") return { ok: false, message: "다른 사람이 빌린 재고는 반납할 수 없어요." };
     if (result === "not_in_use") return { ok: false, message: "이미 반납된 재고예요." };
     if (result === "login") return { ok: false, message: NO_LOGIN, needLogin: true };

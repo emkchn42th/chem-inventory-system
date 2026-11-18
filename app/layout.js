@@ -3,11 +3,12 @@
 // 각 페이지(app/page.js 등)는 children 자리에 끼워진다.
 import "./globals.css";
 import { StoreProvider } from "../lib/store";
-import { loadInventory, loadRentals, loadReagents } from "../lib/data";
-import { buildReagentIndex } from "../lib/reagent-index";
+import { loadInventory, loadRentals } from "../lib/data";
+import { loadReagentIndex } from "../lib/reagent-index";
 import { getUser } from "../lib/auth";
 import { ToastProvider } from "../components/Toast";
 import MobileNav from "../components/MobileNav";
+import HoverPrefetch from "../components/HoverPrefetch";
 import { themeScript } from "../components/ThemeToggle";
 
 export const metadata = {
@@ -28,12 +29,11 @@ export default async function RootLayout({ children }) {
   // 바구니·반납 화면이 재고와 대여 기록을 알 수 있도록 서버에서 읽어 나눠 준다.
   // 대여/반납 후 router.refresh() 를 하면 이 값이 새로 읽혀 모든 화면에 반영된다.
   // 시약 요약(이름·신호어·그림문자)은 검색 자동완성, 최근 본 시약, 위험 조합 경고에 쓴다.
-  const [inventory, rentals, reagents] = await Promise.all([
+  const [inventory, rentals, reagentIndex] = await Promise.all([
     loadInventory(),
     loadRentals(),
-    loadReagents(),
+    loadReagentIndex(),
   ]);
-  const reagentIndex = buildReagentIndex(reagents);
   // 로그인한 사람 (반납 버튼·헤더 이름 표시에 씀). 로그인하지 않았으면 null
   const user = getUser();
 
@@ -44,10 +44,15 @@ export default async function RootLayout({ children }) {
         {/* 테마 05 글꼴: IBM Plex Sans KR(본문), IBM Plex Mono(CAS·재고번호·위치 같은 코드) */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* 글꼴 파일을 기다리느라 첫 화면이 늦게 뜨지 않도록, 화면을 먼저 그리고 글꼴은 받는 대로 바꿔 끼운다
+            (media="print" 로 받기 시작한 뒤 바로 all 로 바꾸는 방법) */}
         <link
+          id="font-css"
           rel="stylesheet"
+          media="print"
           href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap"
         />
+        <script dangerouslySetInnerHTML={{ __html: `document.getElementById('font-css').media='all';` }} />
         {/* 화면이 그려지기 전에 라이트/다크를 먼저 정한다 (깜빡임 방지) */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
@@ -56,6 +61,7 @@ export default async function RootLayout({ children }) {
           <ToastProvider>
             {children}
             <MobileNav />
+            <HoverPrefetch />
           </ToastProvider>
         </StoreProvider>
       </body>

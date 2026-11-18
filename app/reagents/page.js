@@ -28,7 +28,7 @@ import {
   filterReagents,
   getOrderNeed,
 } from "../../lib/data";
-import { buildMsdsView } from "../../lib/msds";
+import { loadReagentIndex } from "../../lib/reagent-index";
 
 const SORTS = [
   { key: "name", label: "이름순" },
@@ -76,8 +76,12 @@ export default async function ReagentsPage({ searchParams }) {
   };
 
   // 2) 데이터 읽기
-  const reagents = await loadReagents();
-  const inventory = await loadInventory();
+  const [reagents, inventory, reagentIndex] = await Promise.all([
+    loadReagents(),
+    loadInventory(),
+    loadReagentIndex(), // 미리보기용 요약 (서버에 보관해 둔 것을 씀)
+  ]);
+  const summaryOf = new Map(reagentIndex.map((item) => [item.name, item]));
 
   // 3) 조건에 맞게 거르고, 화면 제목도 조건에 맞춰 정한다
   let results;
@@ -185,7 +189,7 @@ export default async function ReagentsPage({ searchParams }) {
             {results.map((reagent) => {
               const stock = summarizeStock(inventory, reagent.시약명);
               const orderNeed = getOrderNeed(inventory, reagent.시약명);
-              const msds = buildMsdsView(reagent);
+              const msds = summaryOf.get(reagent.시약명) ?? { signal: "", pictograms: [], hazards: [] };
 
               return (
                 <Link
@@ -262,8 +266,8 @@ export default async function ReagentsPage({ searchParams }) {
                       </div>
                     )}
                     <ul className={styles.previewList}>
-                      {msds.hazardStatements.slice(0, 3).map((item) => (
-                        <li key={item.code}>{item.text}</li>
+                      {msds.hazards.map((text) => (
+                        <li key={text}>{text}</li>
                       ))}
                     </ul>
                     {orderNeed && <p className={styles.previewOrder}>📦 주문 필요 · {orderNeed}</p>}
